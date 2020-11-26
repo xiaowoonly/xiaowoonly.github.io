@@ -28,7 +28,7 @@
 <meta property="og:description" content="Hexo的博客搭建操作">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-11-21T05:14:15.000Z">
-<meta property="article:modified_time" content="2020-11-24T12:52:38.704Z">
+<meta property="article:modified_time" content="2020-11-26T01:34:55.298Z">
 <meta property="article:author" content="Liuhw">
 <meta property="article:tag" content="Hexo">
 <meta property="article:tag" content="Github">
@@ -133,7 +133,7 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">1</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">2</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
@@ -206,7 +206,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-24 20:52:38" itemprop="dateModified" datetime="2020-11-24T20:52:38+08:00">2020-11-24</time>
+                <time title="修改时间：2020-11-26 09:34:55" itemprop="dateModified" datetime="2020-11-26T09:34:55+08:00">2020-11-26</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -280,7 +280,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
 
 <p>可能会报错，可以选择无视</p>
-<p>安装完毕之后可以使用 <code>hexo -v</code>检验是否安装成功；</p>
+<p>安装完毕之后可以使用 <code>hexo -v</code>检验是否安装成功和查看版本信息；</p>
 <p><strong>注：如果出现无法加载文件 \AppData\Roaming\npm\hexo.ps1，因为在此系统上禁止运行脚本，可以以管理员身份打开powershell，然后输入set-ExecutionPolicy RemoteSigned命令，输入Y，执行回车。</strong></p>
 <p>接下来初始化<strong>hexo</strong>，输入<code>hexo init</code>初始化文件夹，或者进入Blog</p>
 <p>输入命令：</p>
@@ -317,14 +317,47 @@
 <h2 id="7-设置个人域名"><a href="#7-设置个人域名" class="headerlink" title="7. 设置个人域名"></a>7. 设置个人域名</h2><p>可以使用免费申请<a target="_blank" rel="noopener" href="https://www.freenom.com/">Freenom</a>，申请到域名可以默认选择用自带的<strong>Manage Freenom DNS</strong>来配置域名解析，不使用<a target="_blank" rel="noopener" href="https://www.cloudflare.com/">CloudFlare</a>，然后打开<strong>GitHub</strong>博客项目，点击<strong>settings</strong>，找到<strong>Custom domain</strong>，填入自己的域名<code>www.xxx.xxx</code>，并选好相应的分支，保存即可。此时项目会多个<strong>CNAME</strong>文件，如果没有的话，打开你本地博客/source目录，我的是D:\Blog\source，新建<strong>CNAME</strong>文件，注意没有后缀。然后在里面写上你的域名，保存。最后运行<em>hexo g、hexo d</em>上传到<strong>github</strong>，后续可以使用域名打开自己博客！</p>
 <p><strong>注：Hexo - CNAME文件在每次部署后就没了，此时可以将需要上传部署到Github的文件都放在source文件夹里</strong></p>
 <h2 id="8-写文章及其发布"><a href="#8-写文章及其发布" class="headerlink" title="8. 写文章及其发布"></a>8. 写文章及其发布</h2><p>在博客根目录打开<strong>git bash</strong>，安装扩展<strong>npm i hexo-deployer-git</strong>；</p>
-<p>输入<code>hexo new post &quot;article title&quot;</code>，新建文章，打开<code>D:\Blog\source\\_posts</code>发现.md文件即可；</p>
-<p>编辑完后，根目录下输入<code>hexo g</code>生成静态网页，然后输入<code>hexo s</code>可以本地预览效果，最后输入<code>hexo d</code>上传到github上。这时打开你的github.io主页就能看到发布的文章。</p>
-<h2 id="9-Hexo添加Toc支持，生成文章目录"><a href="#9-Hexo添加Toc支持，生成文章目录" class="headerlink" title="9. Hexo添加Toc支持，生成文章目录"></a>9. Hexo添加Toc支持，生成文章目录</h2><p>Hexo提供了诸多插件来增强博客体验，地址<a target="_blank" rel="noopener" href="http://hexo.io/plugins/,%E5%9C%A8%E5%8D%9A%E5%AE%A2%E6%90%AC%E8%BF%81%E7%9A%84%E6%97%B6%E5%8F%91%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%94%9F%E6%88%90%E6%96%87%E7%AB%A0%E7%9B%AE%E5%BD%95%E7%9A%84%E6%8F%92%E4%BB%B6%EF%BC%8C[hexo-toc](https://github.com/bubkoo/hexo-toc)%E3%80%82">http://hexo.io/plugins/,在博客搬迁的时发现一个生成文章目录的插件，[hexo-toc](https://github.com/bubkoo/hexo-toc)。</a></p>
+<h3 id="8-1-写作"><a href="#8-1-写作" class="headerlink" title="8.1 写作"></a>8.1 写作</h3><p><strong>执行下列命令来创建一篇新文章或者新的页面：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new [layout] &lt;title&gt;</span><br></pre></td></tr></table></figure>
+
+<p>可以在命令中指定文章的布局（layout），默认为 <strong>post</strong>，可以通过修改 <code>_config.yml</code> 中的 <code>default_layout</code> 参数来指定默认布局;</p>
+<h3 id="8-2-布局"><a href="#8-2-布局" class="headerlink" title="8.2 布局"></a>8.2 布局</h3><p><strong>Hexo</strong> 有三种默认布局：<strong>post</strong>、<strong>page</strong> 和 <strong>draft</strong>。在创建者三种不同类型的文件时，它们将会被保存到不同的路径；而您自定义的其他布局和 <strong>post</strong> 相同，都将储存到 <code>source/_posts</code> 文件夹</p>
+<table>
+<thead>
+<tr>
+<th>布局</th>
+<th>路径</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>post</td>
+<td>source/_posts</td>
+</tr>
+<tr>
+<td>page</td>
+<td>source</td>
+</tr>
+<tr>
+<td>draft</td>
+<td>source/_drafts</td>
+</tr>
+</tbody></table>
+<h3 id="8-3-新建文章"><a href="#8-3-新建文章" class="headerlink" title="8.3 新建文章"></a>8.3 新建文章</h3><p>输入<code>hexo new post &quot;article title&quot;</code>，新建文章，打开<code>D:\Blog\source\_posts</code>发现.md文件即可；编辑完后，根目录下输入<code>hexo clean</code> ，<code>hexo g</code>生成静态网页，然后输入<code>hexo s</code>可以本地预览效果，最后输入<code>hexo d</code>上传到github上。这时打开你的github.io主页就能看到发布的文章；</p>
+<p>在实际写作时，在开头进行categories配置，在文章发布后，会在根目录<code>/public/categories</code>下自动生成归档文件夹</p>
+<h3 id="8-4-新建草稿"><a href="#8-4-新建草稿" class="headerlink" title="8.4 新建草稿"></a>8.4 新建草稿</h3><p>输入<code>hexo new draft &quot;new draft&quot;</code>，新建草稿，打开<code>D:\Blog\source\_drafts</code>发现.md文件即可；但是这个文件不被显示在页面上，链接也访问不到。也就是说如果你想把某一篇文章移除显示，又不舍得删除，可以把它移动到_drafts目录之中；</p>
+<p>如果希望强行预览草稿，更改站点配置文件 <code>render_drafts: true</code> 或者，启动server执行命令 <code>hexo server --drafts</code> ；</p>
+<p>后续如果想把草稿变成文章可执行命令<code>hexo publish [layout] &lt;filename&gt;</code></p>
+<h3 id="8-5-新建自定义页面"><a href="#8-5-新建自定义页面" class="headerlink" title="8.5 新建自定义页面"></a>8.5 新建自定义页面</h3><p>输入<code>hexo new page &quot;tags&quot;</code>，新建草稿，打开<code>D:\Blog\source</code>会有多的文件夹，在该文件夹下会有一个<code>index.md</code>文件，在新生成的<code>/tags/index.md</code>中添加<code>type:  &quot;tags&quot;</code>，匹配主题配置文件 <code>_config.yml</code> 中的  <strong>menu</strong>即可</p>
+<h3 id="8-6-模版（Scaffold）"><a href="#8-6-模版（Scaffold）" class="headerlink" title="8.6 模版（Scaffold）"></a>8.6 模版（Scaffold）</h3><p>其中：在新建文章时，Hexo 会根据 scaffolds 文件夹内相对应的文件来建立文件，如果新建了<strong>scaffold **模板，<code>hexo new scaffold &quot;My Scaffold&quot;</code> ，</strong>Hexo** 会尝试在 <code>scaffolds</code> 文件夹中寻找 <code>scaffolds.md</code>，并根据其内容建立文章；</p>
+<h2 id="9-Hexo添加Toc支持，生成文章目录"><a href="#9-Hexo添加Toc支持，生成文章目录" class="headerlink" title="9. Hexo添加Toc支持，生成文章目录"></a>9. Hexo添加Toc支持，生成文章目录</h2><p>Hexo提供了诸多插件来增强博客体验，<a target="_blank" rel="noopener" href="http://hexo.io/plugins/">插件地址</a>，在博客搬迁的时发现一个生成文章目录的插件，<a target="_blank" rel="noopener" href="https://github.com/bubkoo/hexo-toc">hexo-toc</a>。</p>
 <p>在<strong>git bash</strong>输入安装：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-toc --save</span><br></pre></td></tr></table></figure>
 
 <p>在博客根目录下的_config.yml 中配置：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">toc:</span></span><br><span class="line">  <span class="attr">maxDepth:</span> <span class="number">3</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">toc:</span></span><br><span class="line">  <span class="attr">maxDepth:</span> <span class="number">4</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="10-使用Hexo换了电脑之后的操作"><a href="#10-使用Hexo换了电脑之后的操作" class="headerlink" title="10. 使用Hexo换了电脑之后的操作"></a>10. 使用Hexo换了电脑之后的操作</h2><p>除了重新安装工具之外，<code>scaffolds/</code>，<code>source/</code>，<code>theme/</code>，<code>_config.yml</code>，<code>.gitignore</code>，<code>README.md</code>，<code>package-lock.json</code>，<code>package.json</code>，文件夹及文件需要保留（可将其上传至GitHub）</p>
+
     </div>
 
     
@@ -376,8 +409,8 @@
     <div class="post-nav">
       <div class="post-nav-item"></div>
       <div class="post-nav-item">
-    <a href="/2020/11/23/%E5%8D%9A%E5%AE%A2%E7%BE%8E%E5%8C%96/" rel="next" title="博客美化">
-      博客美化 <i class="fa fa-chevron-right"></i>
+    <a href="/2020/11/23/NexT7.8.0%E4%B8%BB%E9%A2%98%E7%BE%8E%E5%8C%96%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0%EF%BC%89/" rel="next" title="NexT 7.8.0 主题美化（持续更新）">
+      NexT 7.8.0 主题美化（持续更新） <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -437,7 +470,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85Git"><span class="nav-text">1. 安装Git</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%AE%89%E8%A3%85node-js"><span class="nav-text">2. 安装node.js</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-GitHub%E5%88%9B%E5%BB%BA%E4%B8%AA%E4%BA%BA%E4%BB%93%E5%BA%93"><span class="nav-text">3. GitHub创建个人仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E7%94%9F%E6%88%90SSH%E6%B7%BB%E5%8A%A0%E5%88%B0GitHub"><span class="nav-text">4. 生成SSH添加到GitHub</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E5%AE%89%E8%A3%85Hexo"><span class="nav-text">5. 安装Hexo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E5%B0%86Hexo%E9%83%A8%E7%BD%B2%E5%88%B0GitHub"><span class="nav-text">6. 将Hexo部署到GitHub</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E8%AE%BE%E7%BD%AE%E4%B8%AA%E4%BA%BA%E5%9F%9F%E5%90%8D"><span class="nav-text">7. 设置个人域名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-%E5%86%99%E6%96%87%E7%AB%A0%E5%8F%8A%E5%85%B6%E5%8F%91%E5%B8%83"><span class="nav-text">8. 写文章及其发布</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-Hexo%E6%B7%BB%E5%8A%A0Toc%E6%94%AF%E6%8C%81%EF%BC%8C%E7%94%9F%E6%88%90%E6%96%87%E7%AB%A0%E7%9B%AE%E5%BD%95"><span class="nav-text">9. Hexo添加Toc支持，生成文章目录</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85Git"><span class="nav-text">1. 安装Git</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%AE%89%E8%A3%85node-js"><span class="nav-text">2. 安装node.js</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-GitHub%E5%88%9B%E5%BB%BA%E4%B8%AA%E4%BA%BA%E4%BB%93%E5%BA%93"><span class="nav-text">3. GitHub创建个人仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E7%94%9F%E6%88%90SSH%E6%B7%BB%E5%8A%A0%E5%88%B0GitHub"><span class="nav-text">4. 生成SSH添加到GitHub</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E5%AE%89%E8%A3%85Hexo"><span class="nav-text">5. 安装Hexo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E5%B0%86Hexo%E9%83%A8%E7%BD%B2%E5%88%B0GitHub"><span class="nav-text">6. 将Hexo部署到GitHub</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E8%AE%BE%E7%BD%AE%E4%B8%AA%E4%BA%BA%E5%9F%9F%E5%90%8D"><span class="nav-text">7. 设置个人域名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-%E5%86%99%E6%96%87%E7%AB%A0%E5%8F%8A%E5%85%B6%E5%8F%91%E5%B8%83"><span class="nav-text">8. 写文章及其发布</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-%E5%86%99%E4%BD%9C"><span class="nav-text">8.1 写作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-2-%E5%B8%83%E5%B1%80"><span class="nav-text">8.2 布局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-3-%E6%96%B0%E5%BB%BA%E6%96%87%E7%AB%A0"><span class="nav-text">8.3 新建文章</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-4-%E6%96%B0%E5%BB%BA%E8%8D%89%E7%A8%BF"><span class="nav-text">8.4 新建草稿</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-5-%E6%96%B0%E5%BB%BA%E8%87%AA%E5%AE%9A%E4%B9%89%E9%A1%B5%E9%9D%A2"><span class="nav-text">8.5 新建自定义页面</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-6-%E6%A8%A1%E7%89%88%EF%BC%88Scaffold%EF%BC%89"><span class="nav-text">8.6 模版（Scaffold）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-Hexo%E6%B7%BB%E5%8A%A0Toc%E6%94%AF%E6%8C%81%EF%BC%8C%E7%94%9F%E6%88%90%E6%96%87%E7%AB%A0%E7%9B%AE%E5%BD%95"><span class="nav-text">9. Hexo添加Toc支持，生成文章目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-%E4%BD%BF%E7%94%A8Hexo%E6%8D%A2%E4%BA%86%E7%94%B5%E8%84%91%E4%B9%8B%E5%90%8E%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="nav-text">10. 使用Hexo换了电脑之后的操作</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -460,7 +493,7 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">

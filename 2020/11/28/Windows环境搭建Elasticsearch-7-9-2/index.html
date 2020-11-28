@@ -20,17 +20,17 @@
     var CONFIG = {"hostname":"www.pomelo.ga","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Elasticsearch 是一个分布式、RESTful 风格的搜索和数据分析引擎，能够解决不断涌现出的各种用例。 作为 Elastic Stack 的核心，它集中存储您的数据，帮助您发现意料之中以及意料之外的情况。">
+  <meta name="description" content="Elasticsearch 是一个分布式、RESTful 风格的搜索和数据分析引擎，能够解决不断涌现出的各种用例。 作为 Elastic Stack 的核心，它集中存储您的数据，帮助您发现意料之中以及意料之外的情况，elasticsearch官方文档。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Windows环境搭建Elasticsearch-7.9.2多节点配置">
 <meta property="og:url" content="https://www.pomelo.ga/2020/11/28/Windows%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAElasticsearch-7-9-2/index.html">
 <meta property="og:site_name" content="小沃的博客">
-<meta property="og:description" content="Elasticsearch 是一个分布式、RESTful 风格的搜索和数据分析引擎，能够解决不断涌现出的各种用例。 作为 Elastic Stack 的核心，它集中存储您的数据，帮助您发现意料之中以及意料之外的情况。">
+<meta property="og:description" content="Elasticsearch 是一个分布式、RESTful 风格的搜索和数据分析引擎，能够解决不断涌现出的各种用例。 作为 Elastic Stack 的核心，它集中存储您的数据，帮助您发现意料之中以及意料之外的情况，elasticsearch官方文档。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://res.cloudinary.com/hanwen/image/upload/v1606530334/blog_use/Elasticsearch/1X704_LCG_AI_8EF7_9715_f0m1nl.png">
 <meta property="og:image" content="https://res.cloudinary.com/hanwen/image/upload/v1606533826/blog_use/Elasticsearch/ElasticSearch_Head_npklv4.png">
 <meta property="article:published_time" content="2020-11-28T01:56:40.000Z">
-<meta property="article:modified_time" content="2020-11-28T03:39:13.957Z">
+<meta property="article:modified_time" content="2020-11-28T06:08:10.905Z">
 <meta property="article:author" content="Liuhw">
 <meta property="article:tag" content="Elasticsearch">
 <meta name="twitter:card" content="summary">
@@ -134,12 +134,12 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">8</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">9</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">4</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">5</span></a>
 
   </li>
         <li class="menu-item menu-item-favorite">
@@ -201,7 +201,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-11-28 09:56:40 / 修改时间：11:39:13" itemprop="dateCreated datePublished" datetime="2020-11-28T09:56:40+08:00">2020-11-28</time>
+              <time title="创建时间：2020-11-28 09:56:40 / 修改时间：14:08:10" itemprop="dateCreated datePublished" datetime="2020-11-28T09:56:40+08:00">2020-11-28</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -231,7 +231,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Elasticsearch 是一个分布式、RESTful 风格的搜索和数据分析引擎，能够解决不断涌现出的各种用例。 作为 Elastic Stack 的核心，它集中存储您的数据，帮助您发现意料之中以及意料之外的情况。</p>
+        <p>Elasticsearch 是一个分布式、RESTful 风格的搜索和数据分析引擎，能够解决不断涌现出的各种用例。 作为 Elastic Stack 的核心，它集中存储您的数据，帮助您发现意料之中以及意料之外的情况，<a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/7.x/index.html">elasticsearch官方文档</a>。</p>
 <a id="more"></a>
 
 <h2 id="Elasticsearch核心概念"><a href="#Elasticsearch核心概念" class="headerlink" title="Elasticsearch核心概念"></a>Elasticsearch核心概念</h2><ol>
@@ -246,8 +246,14 @@
 <p>一个节点可以通过配置集群名称的方式来加入一个指定的集群。默认情况下，每个节点都会被安排加入到一个叫做“elasticsearch”的集群中，这意味着，如果你在你的网络中启动了若干个节点，并假定它们能够相互发现彼此，它们将会自动地形成并加入到一个叫做“elasticsearch”的集群中。</p>
 <p>在一个集群里，只要你想，可以拥有任意多个节点。而且，如果当前你的网络中没有运行任何Elasticsearch节点，这时启动一个节点，会默认创建并加入一个叫做“elasticsearch”的集群。</p>
 </li>
+<li><p>ElaticSearch 和 DB 的关系</p>
+<p>在 Elasticsearch 中，文档归属于一种类型 type，而这些类型存在于索引 index 中，我们可以列一些简单的不同点，来类比传统关系型数据库：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Relational DB -&gt; Databases -&gt; Tables -&gt; Rows -&gt; Columns</span><br><span class="line">Elasticsearch -&gt; Indices -&gt; Types -&gt; Documents -&gt; Fields</span><br></pre></td></tr></table></figure>
+
+<p>Elasticsearch 集群可以包含多个索引 indices，每一个索引可以包含多个类型 types，每一个类型包含多个文档 documents，然后每个文档包含多个字段 Fields。而在 DB 中可以有多个数据库 Databases，每个库中可以有多张表 Tables，没个表中又包含多行Rows，每行包含多列Columns。</p>
+</li>
 <li><p>索引（index）</p>
-<p>一个索引就是一个拥有几分相似特征的文档的集合。比如说，你可以有一个客户数据的索引，另一个产品目录的索引，还有一个订单数据的索引。一个索引由一个名字来标识（必须全部是小写字母的），并且当我们要对对应于这个索引中的文档进行索引、搜索、更新和删除的时候，都要使用到这个名字。索引类似于关系型数据库中Database的概念。在一个集群中，如果你想，可以定义任意多的索引。</p>
+<p>一个索引就是一个拥有几分相似特征的文档的集合。比如说，你可以有一个客户数据的索引，另一个产品目录的索引，还有一个订单数据的索引。一个索引由一个名字来标识（必须全部是小写字母的），并且当我们要对对应于这个索引中的文档进行索引、搜索、更新和删除的时候，都要使用到这个名字。索引类似于关系型数据库中Database的概念。在一个集群中，如果你想，可以定义任意多的索引。索引是含义相同属性的文档集合，是 ElasticSearch 的一个逻辑存储，可以理解为关系型数据库中的数据库，ElasticSearch 可以把索引数据存放到一台服务器上，也可以 sharding 后存到多台服务器上，每个索引有一个或多个分片，每个分片可以有多个副本。</p>
 </li>
 <li><p>类型（type） </p>
 <p><strong>需要注意的是，7.x后，已废除单个索引下多 Type 的支持，es删除了type，只允许存在一种type，不需要指定type的值，默认是_doc</strong>；</p>
@@ -256,8 +262,35 @@
 <li><p>文档（document）</p>
 <p>一个文档是一个可被索引的基础信息单元。比如，你可以拥有某一个客户的文档，某一个产品的一个文档，当然，也可以拥有某个订单的一个文档。文档以JSON（Javascript Object Notation）格式来表示，而JSON是一个到处存在的互联网数据交互格式。<br>在一个index/type里面，只要你想，你可以存储任意多的文档。注意，尽管一个文档，物理上存在于一个索引之中，文档必须被索引/赋予一个索引的type。文档类似于关系型数据库中Record的概念。实际上一个文档除了用户定义的数据外，还包括<code>_index</code>、<code>_type</code>和<code>_id</code>字段。</p>
 </li>
+<li><p>映射（mapping）</p>
+<p>ElasticSearch 的 Mapping 非常类似于静态语言中的数据类型：声明一个变量为 int 类型的变量，以后这个变量都只能存储 int 类型的数据。同样的，一个 number 类型的 mapping 字段只能存储 number 类型的数据。同语言的数据类型相比，Mapping 还有一些其他的含义，Mapping 不仅告诉 ElasticSearch 一个 Field 中是什么类型的值， 它还告诉 ElasticSearch 如何索引数据以及数据是否能被搜索到。ElaticSearch 默认是动态创建索引和索引类型的 Mapping 的。这就相当于无需定义 Solr 中的 Schema，无需指定各个字段的索引规则就可以索引文件，很方便。但有时方便就代表着不灵活。比如，ElasticSearch 默认一个字段是要做分词的，但我们有时要搜索匹配整个字段却不行。如有统计工作要记录每个城市出现的次数。对于 name 字段，若记录 new york 文本，ElasticSearch 可能会把它拆分成 new 和 york 这两个词，分别计算这个两个单词的次数，而不是我们期望的 new york。</p>
+</li>
 <li><p>分片和复制（shards &amp; replicas）</p>
 <p>一个索引可以存储超出单个结点硬件限制的大量数据。比如，一个具有10亿文档的索引占据1TB的磁盘空间，而任一节点都没有这样大的磁盘空间；或者单个节点处理搜索请求，响应太慢。Elasticsearch提供了将索引划分成多份的能力，这些份就叫做分片。当你创建一个索引的时候，你可以指定你想要的分片的数量。每个分片本身也是一个功能完善并且独立的“索引”，这个“索引”可以被放置到集群中的任何节点上。 </p>
+</li>
+</ol>
+<h2 id="Elasticsearch7-X重大改进"><a href="#Elasticsearch7-X重大改进" class="headerlink" title="Elasticsearch7.X重大改进"></a>Elasticsearch7.X重大改进</h2><ol>
+<li><p>彻底废弃多type支持，包括api层面，之前版本可在一个索引库下创建多个type。</p>
+</li>
+<li><p>彻底废弃_all字段支持，为提升性能默认不再支持全文检索，即7.0之后版本进行该项配置会报错。</p>
+</li>
+<li><p>新增应用程序主动监测功能，搭配对应的kibana版本，用户可监测应用服务的健康状态，并在出现问题后及时发出通知。</p>
+</li>
+<li><p>取消query结果中hits count的支持（聚合查询除外），使得查询性能大幅提升（3x-7x faster）。这意味着，每次查询后将不能得到精确的结果集数量。</p>
+</li>
+<li><p>新增intervals query ,用户可设置多字符串在文档中出现的先后顺序进行检索。</p>
+</li>
+<li><p>新增script_core ，通过此操作用户可以精确控制返回结果的score分值。</p>
+</li>
+<li><p>优化集群协调子系统，缩减配置项提升稳定性。</p>
+</li>
+<li><p>新增 alias、date_nanos、features、vector等数据类型。</p>
+</li>
+<li><p>7.0自带java环境，所以我们在安装es时不再需要单独下载和配置java_home。</p>
+</li>
+<li><p>7.0将不会再有OOM的情况，JVM引入了新的circuit breaker（熔断）机制，当查询或聚合的数据量超出单机处理的最大内存限制时会被截断，并抛出异常（有点类似clickhouse）。</p>
+</li>
+<li><p>丰富多彩的kibana功能。</p>
 </li>
 </ol>
 <h2 id="Windows安装Elasticsearch"><a href="#Windows安装Elasticsearch" class="headerlink" title="Windows安装Elasticsearch"></a>Windows安装Elasticsearch</h2><ol>
@@ -293,12 +326,10 @@
 <p>节点二配置：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 设置集群名称，集群内所有节点的名称必须一致。</span></span><br><span class="line"><span class="attr">cluster.name:</span> <span class="string">my-application</span></span><br><span class="line"><span class="comment"># 设置节点名称，集群内节点名称必须唯一。</span></span><br><span class="line"><span class="attr">node.name:</span> <span class="string">node-2</span></span><br><span class="line"><span class="comment"># 表示该节点会不会作为主节点，true表示会；false表示不会</span></span><br><span class="line"><span class="attr">node.master:</span> <span class="literal">true</span></span><br><span class="line"><span class="comment"># 当前节点是否用于存储数据，是：true、否：false</span></span><br><span class="line"><span class="comment"># node.data: true</span></span><br><span class="line"><span class="comment"># 索引数据存放的位置</span></span><br><span class="line"><span class="comment">#path.data: /opt/elasticsearch/data</span></span><br><span class="line"><span class="comment"># 日志文件存放的位置</span></span><br><span class="line"><span class="comment">#path.logs: /opt/elasticsearch/logs</span></span><br><span class="line"><span class="comment"># 需求锁住物理内存，是：true、否：false</span></span><br><span class="line"><span class="comment">#bootstrap.memory_lock: true</span></span><br><span class="line"><span class="comment"># 监听地址，用于访问该es</span></span><br><span class="line"><span class="comment"># network.host: 127.0.0.1</span></span><br><span class="line"><span class="comment"># es对外提供的http端口，默认 9200</span></span><br><span class="line"><span class="attr">http.port:</span> <span class="number">9201</span></span><br><span class="line"><span class="comment"># TCP的默认监听端口，默认 9300</span></span><br><span class="line"><span class="comment"># transport.tcp.port: 9301</span></span><br><span class="line"><span class="comment"># 设置这个参数来保证集群中的节点可以知道其它N个有master资格的节点。默认为1，对于大的集群来说，可以设置大一点的值（2-4）</span></span><br><span class="line"><span class="comment"># discovery.zen.minimum_master_nodes: 2</span></span><br><span class="line"><span class="comment"># es7.x 之后新增的配置，写入候选主节点的设备地址，在开启服务后可以被选为主节点</span></span><br><span class="line"><span class="comment"># discovery.seed_hosts: [&quot;127.0.0.1:9300&quot;, &quot;127.0.0.1:9301&quot;] </span></span><br><span class="line"><span class="comment"># discovery.zen.fd.ping_timeout: 1m</span></span><br><span class="line"><span class="comment"># discovery.zen.fd.ping_retries: 5</span></span><br><span class="line"><span class="comment"># es7.x 之后新增的配置，初始化一个新的集群时需要此配置来选举master</span></span><br><span class="line"><span class="attr">cluster.initial_master_nodes:</span> [<span class="string">&quot;node-1&quot;</span>, <span class="string">&quot;node-2&quot;</span>]</span><br><span class="line"><span class="comment"># 是否支持跨域，是：true，在使用head插件时需要此配置</span></span><br><span class="line"><span class="attr">http.cors.enabled:</span> <span class="literal">true</span></span><br><span class="line"><span class="comment"># “*” 表示支持所有域名</span></span><br><span class="line"><span class="attr">http.cors.allow-origin:</span> <span class="string">&quot;*&quot;</span></span><br><span class="line"><span class="comment"># action.destructive_requires_name: true</span></span><br><span class="line"><span class="comment"># action.auto_create_index: .security,.monitoring*,.watches,.triggered_watches,.watcher-history*</span></span><br><span class="line"><span class="comment"># xpack.security.enabled: false</span></span><br><span class="line"><span class="comment"># xpack.monitoring.enabled: true</span></span><br><span class="line"><span class="comment"># xpack.graph.enabled: false</span></span><br><span class="line"><span class="comment"># xpack.watcher.enabled: false</span></span><br><span class="line"><span class="comment"># xpack.ml.enabled: false</span></span><br></pre></td></tr></table></figure>
 
-
-
+<h2 id="ElasticSearch-Head-使用"><a href="#ElasticSearch-Head-使用" class="headerlink" title="ElasticSearch Head 使用"></a>ElasticSearch Head 使用</h2><p>浏览器安装插件<code>ElasticSearch Head</code>即可使用</p>
+<p><img src="https://res.cloudinary.com/hanwen/image/upload/v1606533826/blog_use/Elasticsearch/ElasticSearch_Head_npklv4.png"></p>
 </li>
 </ol>
-<h2 id="ElasticSearch-Head-使用"><a href="#ElasticSearch-Head-使用" class="headerlink" title="ElasticSearch Head 使用"></a>ElasticSearch Head 使用</h2><p>   浏览器安装插件<code>ElasticSearch Head</code>即可使用</p>
-<p>   <img src="https://res.cloudinary.com/hanwen/image/upload/v1606533826/blog_use/Elasticsearch/ElasticSearch_Head_npklv4.png"></p>
 
     </div>
 
@@ -351,7 +382,10 @@
     <a href="/2020/11/27/IntelliJ-IDEA-%E5%B8%B8%E7%94%A8%E6%8F%92%E4%BB%B6/" rel="prev" title="IntelliJ IDEA 常用插件">
       <i class="fa fa-chevron-left"></i> IntelliJ IDEA 常用插件
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/28/Spring-Boot%E9%9B%86%E6%88%90Elasticsearch%EF%BC%887-x-%E7%89%88%E6%9C%AC%EF%BC%89/" rel="next" title="Spring Boot集成Elasticsearch（7.x 版本）实现各种搜索（后续可以再补充）">
+      Spring Boot集成Elasticsearch（7.x 版本）实现各种搜索（后续可以再补充） <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -410,7 +444,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Elasticsearch%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">Elasticsearch核心概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Windows%E5%AE%89%E8%A3%85Elasticsearch"><span class="nav-number">2.</span> <span class="nav-text">Windows安装Elasticsearch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ElasticSearch-Head-%E4%BD%BF%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">ElasticSearch Head 使用</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Elasticsearch%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">Elasticsearch核心概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Elasticsearch7-X%E9%87%8D%E5%A4%A7%E6%94%B9%E8%BF%9B"><span class="nav-number">2.</span> <span class="nav-text">Elasticsearch7.X重大改进</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Windows%E5%AE%89%E8%A3%85Elasticsearch"><span class="nav-number">3.</span> <span class="nav-text">Windows安装Elasticsearch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ElasticSearch-Head-%E4%BD%BF%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">ElasticSearch Head 使用</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -426,14 +460,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">5</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">

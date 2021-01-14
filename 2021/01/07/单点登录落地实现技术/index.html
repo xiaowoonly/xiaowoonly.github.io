@@ -20,21 +20,20 @@
     var CONFIG = {"hostname":"www.pomelo.ga","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
   </script>
 
-  <meta name="description" content="多线程是Java最基本的一种并发模型">
+  <meta name="description" content="单点登录（ Single Sign-On , 简称 SSO ）是目前比较流行的服务于企业业务整合的解决方案之一， SSO 使得在多个应用系统中，用户只需要 登录一次 就可以访问所有相互信任的应用系统(一次访问，到处运行)。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="多线程">
-<meta property="og:url" content="https://www.pomelo.ga/2020/11/29/%E5%A4%9A%E7%BA%BF%E7%A8%8B/index.html">
+<meta property="og:title" content="单点登录落地实现技术">
+<meta property="og:url" content="https://www.pomelo.ga/2021/01/07/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E8%90%BD%E5%9C%B0%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF/index.html">
 <meta property="og:site_name" content="小沃的博客">
-<meta property="og:description" content="多线程是Java最基本的一种并发模型">
+<meta property="og:description" content="单点登录（ Single Sign-On , 简称 SSO ）是目前比较流行的服务于企业业务整合的解决方案之一， SSO 使得在多个应用系统中，用户只需要 登录一次 就可以访问所有相互信任的应用系统(一次访问，到处运行)。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-11-29T03:43:15.000Z">
-<meta property="article:modified_time" content="2021-01-04T08:26:28.646Z">
+<meta property="article:published_time" content="2021-01-07T13:02:30.000Z">
+<meta property="article:modified_time" content="2021-01-11T03:01:17.468Z">
 <meta property="article:author" content="Liuhw">
-<meta property="article:tag" content="线程">
-<meta property="article:tag" content="多线程">
+<meta property="article:tag" content="单点登陆">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://www.pomelo.ga/2020/11/29/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
+<link rel="canonical" href="https://www.pomelo.ga/2021/01/07/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E8%90%BD%E5%9C%B0%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF/">
 
 
 <script id="page-configurations">
@@ -47,7 +46,7 @@
   };
 </script>
 
-  <title>多线程 | 小沃的博客</title>
+  <title>单点登录落地实现技术 | 小沃的博客</title>
   
 
 
@@ -203,7 +202,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.pomelo.ga/2020/11/29/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
+    <link itemprop="mainEntityOfPage" href="https://www.pomelo.ga/2021/01/07/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E8%90%BD%E5%9C%B0%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -216,7 +215,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          多线程
+          单点登录落地实现技术
         </h1>
 
         <div class="post-meta">
@@ -226,14 +225,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-11-29 11:43:15" itemprop="dateCreated datePublished" datetime="2020-11-29T11:43:15+08:00">2020-11-29</time>
+              <time title="创建时间：2021-01-07 21:02:30" itemprop="dateCreated datePublished" datetime="2021-01-07T21:02:30+08:00">2021-01-07</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-04 16:26:28" itemprop="dateModified" datetime="2021-01-04T16:26:28+08:00">2021-01-04</time>
+                <time title="修改时间：2021-01-11 11:01:17" itemprop="dateModified" datetime="2021-01-11T11:01:17+08:00">2021-01-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -241,7 +240,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">多线程</span></a>
+                  <a href="/categories/%E5%8D%95%E7%82%B9%E7%99%BB%E9%99%86/" itemprop="url" rel="index"><span itemprop="name">单点登陆</span></a>
                 </span>
             </span>
 
@@ -263,9 +262,81 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>多线程是Java最基本的一种并发模型</p>
+        <p>单点登录（ Single Sign-On , 简称 SSO ）是目前比较流行的服务于企业业务整合的解决方案之一， SSO 使得在多个应用系统中，用户只需要 登录一次 就可以访问所有相互信任的应用系统(一次访问，到处运行)。</p>
 <a id="more"></a>
 
+<p>单点登陆通俗的讲就是要解决如何产生和存储那个信任，以及其他系统如何验证这个信任的有效性；</p>
+<p>单点登录的要点：1.存储信任；2.服务器生产以及验证信任；3.拿到之后服务器再次验证；</p>
+<h2 id="SSO原理"><a href="#SSO原理" class="headerlink" title="SSO原理"></a>SSO原理</h2><h3 id="SSO体系中的角色"><a href="#SSO体系中的角色" class="headerlink" title="SSO体系中的角色"></a>SSO体系中的角色</h3><ol>
+<li>User（多个）</li>
+<li>Web应用（多个）</li>
+<li>SSO认证中心（1个）</li>
+</ol>
+<h3 id="SSO实现模式的原则"><a href="#SSO实现模式的原则" class="headerlink" title="SSO实现模式的原则"></a>SSO实现模式的原则</h3><ol>
+<li>所有的认证登录都在SSO认证中心进行；</li>
+<li>SSO认证中心通过一些方法来告诉Web应用当前访问用户究竟是不是已通过认证的用户；</li>
+<li>SSO 认证中心和所有的 Web 应用建立一种信任关系，也就是说 web 应用必须信任认证中心。（单点信任）</li>
+</ol>
+<h3 id="SSO主要实现方式"><a href="#SSO主要实现方式" class="headerlink" title="SSO主要实现方式"></a>SSO主要实现方式</h3><ol>
+<li><p>共享cookies</p>
+<p>基于共享同域的cookie是Web刚开始阶段时使用的一种方式，它利用浏览同域名之间自动传递cookies机制，实现两个域名之间系统令牌 传递问题；另外，关于跨域问题，虽然 cookies本身不跨域，但可以利用它实现跨域的SSO。如：代理、暴露 SSO 令牌值等。</p>
+</li>
+<li><p>Broker-based(基于经纪人)</p>
+<p>在 这种解决方案中，有一个自动地为不同的应用程序认证用户身份的代理程序。这个代理程序需要设计有不同的功能。比如，它可以使用口令表或加密密钥来自动地将 认证的负担从用户移开。代理人被放在服务器上面，在服务器的认证系统和客户端认证方法之间充当一个 “ 翻译 “。例如 SSH 等。</p>
+</li>
+<li><p>Agent-based（基于代理人）</p>
+<p>在 这种解决方案中，有一个自动地为不同的应用程序认证用户身份的代理程序。这个代理程序需要设计有不同的功能。比如，它可以使用口令表或加密密钥来自动地将 认证的负担从用户移开。代理人被放在服务器上面，在服务器的认证系统和客户端认证方法之间充当一个 “ 翻译 “。例如 SSH 等。</p>
+</li>
+<li><p>Token-based</p>
+<p>例如 SecureID，WebID，现在被广泛使用的口令认证，比如 FTP 、邮件服务器的登录认证，这是一种简单易用的方式，实现一个口令在多种应用当中使用。</p>
+</li>
+<li><p>基于网关</p>
+</li>
+<li><p>基于 SAML</p>
+<p>SAML(Security Assertion Markup Language ，安全断言标记语言）的出现大大简化了 SSO ，并被 OASIS 批准为 SSO 的执行标准 。开源组织 OpenSAML 实现了 SAML 规范。</p>
+</li>
+</ol>
+<h2 id="主要常见技术"><a href="#主要常见技术" class="headerlink" title="主要常见技术"></a>主要常见技术</h2><ol>
+<li><p>CAS（单点登录）</p>
+</li>
+<li><p>OAuth2（第三方登录授权：QQ登录）</p>
+</li>
+<li><p>JWT（客户端token：原生）</p>
+</li>
+<li><p>安全控制框架：</p>
+<ul>
+<li>Spring-Security</li>
+<li>Shiro</li>
+</ul>
+</li>
+</ol>
+<h2 id="CAS（单点登录）"><a href="#CAS（单点登录）" class="headerlink" title="CAS（单点登录）"></a>CAS（单点登录）</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>CAS （ Central Authentication Service ） 是 Yale 大学发起的一个企业级的、开源的项目，旨在为 Web 应用系统提供一种可靠的单点登录解决方法（属于 Web SSO ）。</p>
+<h3 id="结构体系"><a href="#结构体系" class="headerlink" title="结构体系"></a>结构体系</h3><h3 id="主要特性"><a href="#主要特性" class="headerlink" title="主要特性"></a>主要特性</h3><ol>
+<li>开源、多协议的SSO解决方案；Protocols ：Custom、Protocol、CAS、OAuth、OpenID、RESTful API、SAML1.1、SAML2.0 等；</li>
+<li>支持多种认证机制：Active Directory、JAAS、JDBC、LDAP、X.509 Certificates 等；</li>
+<li>安全策略：使用票据（ Ticket ）来实现支持的认证协议；</li>
+<li>支持授权：可以决定哪些服务可以请求和验证服务票据(Service Ticket）；</li>
+<li>提 供高可用性：通过把认证过的状态数据存储在 TicketRegistry 组件中，这些组件有很多支持分布式环境的实现， 如： BerkleyDB、Default、EhcacheTicketRegistry、JDBCTicketRegistry、JBOSS TreeCache、JpaTicketRegistry、MemcacheTicketRegistry 等；</li>
+<li>支持多种客户端： Java 、 .Net 、 PHP 、 Perl 、 Apache, uPortal 等。</li>
+</ol>
+<h3 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h3><p>多个系统只需要登录一次，无需重复登录</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>授权服务器，被授权客户端CS架构</p>
+<ol>
+<li>授权服务器保存了全局的一份session，客户端（多个）格子保存自己的session；</li>
+<li>客户端登录时判断自己的session是否已登录，若未登录，则（告诉浏览器）重定向到授权服务器；（参数带上自己的地址，用于回调）</li>
+<li>授权服务器判断全局的session是否已登录，若未登录则定向到登录页面，提示用户登录，登录成功后，授权服务器重定向到客户端（参数带上ticket[一个凭证号]）；</li>
+<li>客户端收到ticket后，请求服务器获取用户信息；</li>
+<li>服务器同意客户端授权后，服务端保存用户信息至全局session，客户端将用户保存至本地session；</li>
+<li>默认不支持http请求，仅支持https，生成整数keytools；</li>
+</ol>
+<p><strong>缺点：</strong>CAS单点登录技术适用于传统应用的场景比较多，官方示例也是以JavaWeb为准，对微服务化应用，前后端分离应用，支持性较差。</p>
+<p>参考地址：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904155161559048">https://juejin.cn/post/6844904155161559048</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904038555729927">https://juejin.cn/post/6844904038555729927</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/u012702547/article/details/105699777">https://blog.csdn.net/u012702547/article/details/105699777</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.toutiao.com/i6765428664424202763/?tt_from=weixin&amp;utm_campaign=client_share&amp;wxshare_count=1&amp;timestamp=1609846862&amp;app=news_article&amp;utm_source=weixin&amp;utm_medium=toutiao_ios&amp;use_new_style=1&amp;req_id=20210105194102010130036140440A5C55&amp;group_id=6765428664424202763">https://www.toutiao.com/i6765428664424202763/?tt_from=weixin&amp;utm_campaign=client_share&amp;wxshare_count=1&amp;timestamp=1609846862&amp;app=news_article&amp;utm_source=weixin&amp;utm_medium=toutiao_ios&amp;use_new_style=1&amp;req_id=20210105194102010130036140440A5C55&amp;group_id=6765428664424202763</a></li>
+</ol>
 
     </div>
 
@@ -294,7 +365,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://www.pomelo.ga/2020/11/29/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" title="多线程">https://www.pomelo.ga/2020/11/29/多线程/</a>
+    <a href="https://www.pomelo.ga/2021/01/07/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E8%90%BD%E5%9C%B0%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF/" title="单点登录落地实现技术">https://www.pomelo.ga/2021/01/07/单点登录落地实现技术/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -306,8 +377,7 @@
       <footer class="post-footer">
           
           <div class="post-tags">
-              <a href="/tags/%E7%BA%BF%E7%A8%8B/" rel="tag"><i class="fa fa-tag"></i> 线程</a>
-              <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag"><i class="fa fa-tag"></i> 多线程</a>
+              <a href="/tags/%E5%8D%95%E7%82%B9%E7%99%BB%E9%99%86/" rel="tag"><i class="fa fa-tag"></i> 单点登陆</a>
           </div>
 
         
@@ -316,13 +386,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/11/28/Spring-Boot%E9%9B%86%E6%88%90Elasticsearch%EF%BC%887-x-%E7%89%88%E6%9C%AC%EF%BC%89/" rel="prev" title="Spring Boot集成Elasticsearch（7.x 版本）实现各种搜索（后续可以再补充）">
-      <i class="fa fa-chevron-left"></i> Spring Boot集成Elasticsearch（7.x 版本）实现各种搜索（后续可以再补充）
+    <a href="/2020/11/29/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="prev" title="多线程">
+      <i class="fa fa-chevron-left"></i> 多线程
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/01/07/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E8%90%BD%E5%9C%B0%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF/" rel="next" title="单点登录落地实现技术">
-      单点登录落地实现技术 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -381,6 +448,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SSO%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">SSO原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SSO%E4%BD%93%E7%B3%BB%E4%B8%AD%E7%9A%84%E8%A7%92%E8%89%B2"><span class="nav-number">1.1.</span> <span class="nav-text">SSO体系中的角色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SSO%E5%AE%9E%E7%8E%B0%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%8E%9F%E5%88%99"><span class="nav-number">1.2.</span> <span class="nav-text">SSO实现模式的原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SSO%E4%B8%BB%E8%A6%81%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="nav-number">1.3.</span> <span class="nav-text">SSO主要实现方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E5%B8%B8%E8%A7%81%E6%8A%80%E6%9C%AF"><span class="nav-number">2.</span> <span class="nav-text">主要常见技术</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CAS%EF%BC%88%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">CAS（单点登录）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">3.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%84%E4%BD%93%E7%B3%BB"><span class="nav-number">3.2.</span> <span class="nav-text">结构体系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E7%89%B9%E6%80%A7"><span class="nav-number">3.3.</span> <span class="nav-text">主要特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E9%97%AE%E9%A2%98"><span class="nav-number">3.4.</span> <span class="nav-text">解决问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">3.5.</span> <span class="nav-text">原理</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

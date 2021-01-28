@@ -17,13 +17,13 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"www.pomelo.ga","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
+    var CONFIG = {"hostname":"www.1226.site","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
   </script>
 
   <meta name="description" content="单点登录（ Single Sign-On , 简称 SSO ）是目前比较流行的服务于企业业务整合的解决方案之一， SSO 使得在多个应用系统中，用户只需要 登录一次 就可以访问所有相互信任的应用系统(一次访问，到处运行)。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="单点登录落地实现技术">
-<meta property="og:url" content="https://www.pomelo.ga/2021/01/07/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E8%90%BD%E5%9C%B0%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF/index.html">
+<meta property="og:url" content="http://www.1226.site/2021/01/07/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E8%90%BD%E5%9C%B0%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF/index.html">
 <meta property="og:site_name" content="小沃的博客">
 <meta property="og:description" content="单点登录（ Single Sign-On , 简称 SSO ）是目前比较流行的服务于企业业务整合的解决方案之一， SSO 使得在多个应用系统中，用户只需要 登录一次 就可以访问所有相互信任的应用系统(一次访问，到处运行)。">
 <meta property="og:locale" content="zh_CN">
@@ -33,7 +33,7 @@
 <meta property="article:tag" content="单点登陆">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://www.pomelo.ga/2021/01/07/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E8%90%BD%E5%9C%B0%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF/">
+<link rel="canonical" href="http://www.1226.site/2021/01/07/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E8%90%BD%E5%9C%B0%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF/">
 
 
 <script id="page-configurations">
@@ -127,17 +127,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">11</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">13</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">11</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">13</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">7</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">8</span></a>
 
   </li>
         <li class="menu-item menu-item-favorite">
@@ -202,7 +202,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.pomelo.ga/2021/01/07/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E8%90%BD%E5%9C%B0%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF/">
+    <link itemprop="mainEntityOfPage" href="http://www.1226.site/2021/01/07/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E8%90%BD%E5%9C%B0%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -365,7 +365,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://www.pomelo.ga/2021/01/07/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E8%90%BD%E5%9C%B0%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF/" title="单点登录落地实现技术">https://www.pomelo.ga/2021/01/07/单点登录落地实现技术/</a>
+    <a href="http://www.1226.site/2021/01/07/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E8%90%BD%E5%9C%B0%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF/" title="单点登录落地实现技术">http://www.1226.site/2021/01/07/单点登录落地实现技术/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -389,7 +389,10 @@
     <a href="/2020/11/29/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="prev" title="多线程">
       <i class="fa fa-chevron-left"></i> 多线程
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/28/CentOS%E5%AE%89%E8%A3%85Kafka/" rel="next" title="CentOS安装Kafka">
+      CentOS安装Kafka <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -464,20 +467,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

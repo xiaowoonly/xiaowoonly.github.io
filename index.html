@@ -124,12 +124,12 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">13</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">14</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">13</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">14</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
@@ -229,8 +229,17 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-02-03 14:42:58" itemprop="dateModified" datetime="2021-02-03T14:42:58+08:00">2021-02-03</time>
+                <time title="修改时间：2021-02-03 15:28:12" itemprop="dateModified" datetime="2021-02-03T15:28:12+08:00">2021-02-03</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MySQL%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%88%B0ES/" itemprop="url" rel="index"><span itemprop="name">MySQL数据同步到ES</span></a>
+                </span>
+            </span>
 
           
 
@@ -243,37 +252,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="使用go-mysql-elasticsearch开源同步工具"><a href="#使用go-mysql-elasticsearch开源同步工具" class="headerlink" title="使用go-mysql-elasticsearch开源同步工具"></a>使用go-mysql-elasticsearch开源同步工具</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><strong><a target="_blank" rel="noopener" href="https://blog.csdn.net/zhangjunli/article/details/104189347">参考地址</a></strong></p>
-<p>开源工具<a target="_blank" rel="noopener" href="https://github.com/siddontang/go-mysql-elasticsearch">github地址</a></p>
-<p>go-mysql-elasticsearch的基本原理是：如果是第一次启动该程序，首先使用mysqldump工具对源mysql数据库进行一次全量同步，通过elasticsearch client执行操作写入数据到ES；然后实现了一个mysql client,作为slave连接到源mysql，源mysql作为master会将所有数据的更新操作通过binlog event同步给slave， 通过解析binlog event就可以获取到数据的更新内容，之后写入到ES。</p>
-<p>另外，该工具还提供了操作统计的功能，每当有数据增删改操作时，会将对应操作的计数加1，程序启动时会开启一个http服务，通过调用http接口可以查看增删改操作的次数。</p>
-<h3 id="使用事项"><a href="#使用事项" class="headerlink" title="使用事项"></a>使用事项</h3><ol>
-<li><p>MySQL binlog必须是ROW模式；</p>
-</li>
-<li><p>要同步的mysql数据表必须包含主键，否则直接忽略，这是因为如果数据表没有主键，UPDATE和DELETE操作就会因为在ES中找不到对应的document而无法进行同步；</p>
-</li>
-<li><p>不支持程序运行过程中修改表结构；</p>
-</li>
-<li><p>要赋予用于连接mysql的账户RELOAD权限以及REPLICATION权限, SUPER权限；</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GRANT</span> <span class="keyword">REPLICATION</span> <span class="keyword">SLAVE</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">&#x27;elastic&#x27;</span>@<span class="string">&#x27;172.16.32.44&#x27;</span>;</span><br><span class="line"><span class="keyword">GRANT</span> RELOAD <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">&#x27;elastic&#x27;</span>@<span class="string">&#x27;172.16.32.44&#x27;</span>;</span><br><span class="line"><span class="keyword">UPDATE</span> mysql.user <span class="keyword">SET</span> Super_Priv=<span class="string">&#x27;Y&#x27;</span> <span class="keyword">WHERE</span> <span class="keyword">user</span>=<span class="string">&#x27;elastic&#x27;</span> <span class="keyword">AND</span> host=<span class="string">&#x27;172.16.32.44&#x27;</span>;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<h2 id="利用Binlog和Kafka实时同步mysql数据到Elasticsearch"><a href="#利用Binlog和Kafka实时同步mysql数据到Elasticsearch" class="headerlink" title="利用Binlog和Kafka实时同步mysql数据到Elasticsearch"></a>利用Binlog和Kafka实时同步mysql数据到Elasticsearch</h2><p><strong><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/e841e69a5e76">参考地址</a></strong></p>
-<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>binlog中间件，负责解析binlog，把变动的数据以json的格式发送给kafka；</p>
-<p>kafka中间件，负责消费kafka队列中的Message，把数据写入到elasticsearch中；</p>
-<p><strong><a target="_blank" rel="noopener" href="https://gitee.com/OrgXxxx/SyncMysqlToElasticsearch">地址</a></strong></p>
-<h2 id="使用Canal将MySQL数据同步到Elasticsearch"><a href="#使用Canal将MySQL数据同步到Elasticsearch" class="headerlink" title="使用Canal将MySQL数据同步到Elasticsearch"></a>使用Canal将MySQL数据同步到Elasticsearch</h2><h3 id="canal简介"><a href="#canal简介" class="headerlink" title="canal简介"></a>canal简介</h3><p>阿里巴巴开源的canal主要用途是对MySQL数据库增量日志进行解析，提供增量数据的订阅和消费，简单说就是可以对MySQL的增量数据进行实时同步，支持同步到MySQL、Elasticsearch、HBase等数据存储中去。</p>
-<h3 id="canal工作原理"><a href="#canal工作原理" class="headerlink" title="canal工作原理"></a>canal工作原理</h3><p>canal会模拟MySQL主库和从库的交互协议，从而伪装成MySQL的从库，然后向MySQL主库发送dump协议，MySQL主库收到dump请求会向canal推送binlog，canal通过解析binlog将数据同步到其他存储中去。</p>
-<p><strong><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000038264508">地址</a></strong></p>
-<h3 id="canal的使用"><a href="#canal的使用" class="headerlink" title="canal的使用"></a>canal的使用</h3><p>首先我们需要<a target="_blank" rel="noopener" href="https://github.com/alibaba/canal/releases">下载canal</a>的各个组件<code>canal-server</code>、<code>canal-adapter</code>、<code>canal-admin</code></p>
-<ol>
-<li>calnal-server(canal-deploy) : 可以直接监听MySQL的binlog，把自己伪装成MySQL的从库，只负责接收数据，并不做处理；</li>
-<li>canal-adapter：相当于canal的客户端，会从canal-server中获取数据，然后对数据进行同步，可以同步到MySQL、Elasticsearch和HBase等存储中去；</li>
-<li>canal-admin：为canal提供整体配置管理、节点运维等面向运维的功能，提供相对友好的WebUI操作界面，方便更多用户快速和安全的操作。</li>
-</ol>
-<p><strong>注：</strong>不同版本的MySQL、Elasticsearch 和 canal 会有兼容性问题，要注意版本。</p>
-
+          <p>本文主要讲述MySQL数据如何同步到ES7</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/02/02/MySQL%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%88%B0ES7/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1078,13 +1065,13 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

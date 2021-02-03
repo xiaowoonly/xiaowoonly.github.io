@@ -20,21 +20,19 @@
     var CONFIG = {"hostname":"www.1226.site","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
   </script>
 
-  <meta name="description" content="多线程是Java最基本的一种并发模型">
+  <meta name="description" content="使用go-mysql-elasticsearch开源同步工具简介参考地址 开源工具github地址 go-mysql-elasticsearch的基本原理是：如果是第一次启动该程序，首先使用mysqldump工具对源mysql数据库进行一次全量同步，通过elasticsearch client执行操作写入数据到ES；然后实现了一个mysql client,作为slave连接到源mysql，源mys">
 <meta property="og:type" content="article">
-<meta property="og:title" content="多线程">
-<meta property="og:url" content="http://www.1226.site/2020/11/29/%E5%A4%9A%E7%BA%BF%E7%A8%8B/index.html">
+<meta property="og:title" content="MySQL数据同步到ES7">
+<meta property="og:url" content="http://www.1226.site/2021/02/02/MySQL%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%88%B0ES7/index.html">
 <meta property="og:site_name" content="小沃的博客">
-<meta property="og:description" content="多线程是Java最基本的一种并发模型">
+<meta property="og:description" content="使用go-mysql-elasticsearch开源同步工具简介参考地址 开源工具github地址 go-mysql-elasticsearch的基本原理是：如果是第一次启动该程序，首先使用mysqldump工具对源mysql数据库进行一次全量同步，通过elasticsearch client执行操作写入数据到ES；然后实现了一个mysql client,作为slave连接到源mysql，源mys">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-11-29T03:43:15.000Z">
-<meta property="article:modified_time" content="2021-01-04T08:26:28.646Z">
+<meta property="article:published_time" content="2021-02-02T08:10:49.000Z">
+<meta property="article:modified_time" content="2021-02-03T06:42:58.338Z">
 <meta property="article:author" content="Liuhw">
-<meta property="article:tag" content="线程">
-<meta property="article:tag" content="多线程">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://www.1226.site/2020/11/29/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
+<link rel="canonical" href="http://www.1226.site/2021/02/02/MySQL%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%88%B0ES7/">
 
 
 <script id="page-configurations">
@@ -47,7 +45,7 @@
   };
 </script>
 
-  <title>多线程 | 小沃的博客</title>
+  <title>MySQL数据同步到ES7 | 小沃的博客</title>
   
 
 
@@ -203,7 +201,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.1226.site/2020/11/29/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">
+    <link itemprop="mainEntityOfPage" href="http://www.1226.site/2021/02/02/MySQL%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%88%B0ES7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -216,7 +214,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          多线程
+          MySQL数据同步到ES7
         </h1>
 
         <div class="post-meta">
@@ -226,24 +224,15 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-11-29 11:43:15" itemprop="dateCreated datePublished" datetime="2020-11-29T11:43:15+08:00">2020-11-29</time>
+              <time title="创建时间：2021-02-02 16:10:49" itemprop="dateCreated datePublished" datetime="2021-02-02T16:10:49+08:00">2021-02-02</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-04 16:26:28" itemprop="dateModified" datetime="2021-01-04T16:26:28+08:00">2021-01-04</time>
+                <time title="修改时间：2021-02-03 14:42:58" itemprop="dateModified" datetime="2021-02-03T14:42:58+08:00">2021-02-03</time>
               </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">多线程</span></a>
-                </span>
-            </span>
 
           
             <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
@@ -263,9 +252,36 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>多线程是Java最基本的一种并发模型</p>
-<a id="more"></a>
+        <h2 id="使用go-mysql-elasticsearch开源同步工具"><a href="#使用go-mysql-elasticsearch开源同步工具" class="headerlink" title="使用go-mysql-elasticsearch开源同步工具"></a>使用go-mysql-elasticsearch开源同步工具</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><strong><a target="_blank" rel="noopener" href="https://blog.csdn.net/zhangjunli/article/details/104189347">参考地址</a></strong></p>
+<p>开源工具<a target="_blank" rel="noopener" href="https://github.com/siddontang/go-mysql-elasticsearch">github地址</a></p>
+<p>go-mysql-elasticsearch的基本原理是：如果是第一次启动该程序，首先使用mysqldump工具对源mysql数据库进行一次全量同步，通过elasticsearch client执行操作写入数据到ES；然后实现了一个mysql client,作为slave连接到源mysql，源mysql作为master会将所有数据的更新操作通过binlog event同步给slave， 通过解析binlog event就可以获取到数据的更新内容，之后写入到ES。</p>
+<p>另外，该工具还提供了操作统计的功能，每当有数据增删改操作时，会将对应操作的计数加1，程序启动时会开启一个http服务，通过调用http接口可以查看增删改操作的次数。</p>
+<h3 id="使用事项"><a href="#使用事项" class="headerlink" title="使用事项"></a>使用事项</h3><ol>
+<li><p>MySQL binlog必须是ROW模式；</p>
+</li>
+<li><p>要同步的mysql数据表必须包含主键，否则直接忽略，这是因为如果数据表没有主键，UPDATE和DELETE操作就会因为在ES中找不到对应的document而无法进行同步；</p>
+</li>
+<li><p>不支持程序运行过程中修改表结构；</p>
+</li>
+<li><p>要赋予用于连接mysql的账户RELOAD权限以及REPLICATION权限, SUPER权限；</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GRANT</span> <span class="keyword">REPLICATION</span> <span class="keyword">SLAVE</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">&#x27;elastic&#x27;</span>@<span class="string">&#x27;172.16.32.44&#x27;</span>;</span><br><span class="line"><span class="keyword">GRANT</span> RELOAD <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">&#x27;elastic&#x27;</span>@<span class="string">&#x27;172.16.32.44&#x27;</span>;</span><br><span class="line"><span class="keyword">UPDATE</span> mysql.user <span class="keyword">SET</span> Super_Priv=<span class="string">&#x27;Y&#x27;</span> <span class="keyword">WHERE</span> <span class="keyword">user</span>=<span class="string">&#x27;elastic&#x27;</span> <span class="keyword">AND</span> host=<span class="string">&#x27;172.16.32.44&#x27;</span>;</span><br></pre></td></tr></table></figure>
 
+</li>
+</ol>
+<h2 id="利用Binlog和Kafka实时同步mysql数据到Elasticsearch"><a href="#利用Binlog和Kafka实时同步mysql数据到Elasticsearch" class="headerlink" title="利用Binlog和Kafka实时同步mysql数据到Elasticsearch"></a>利用Binlog和Kafka实时同步mysql数据到Elasticsearch</h2><p><strong><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/e841e69a5e76">参考地址</a></strong></p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>binlog中间件，负责解析binlog，把变动的数据以json的格式发送给kafka；</p>
+<p>kafka中间件，负责消费kafka队列中的Message，把数据写入到elasticsearch中；</p>
+<p><strong><a target="_blank" rel="noopener" href="https://gitee.com/OrgXxxx/SyncMysqlToElasticsearch">地址</a></strong></p>
+<h2 id="使用Canal将MySQL数据同步到Elasticsearch"><a href="#使用Canal将MySQL数据同步到Elasticsearch" class="headerlink" title="使用Canal将MySQL数据同步到Elasticsearch"></a>使用Canal将MySQL数据同步到Elasticsearch</h2><h3 id="canal简介"><a href="#canal简介" class="headerlink" title="canal简介"></a>canal简介</h3><p>阿里巴巴开源的canal主要用途是对MySQL数据库增量日志进行解析，提供增量数据的订阅和消费，简单说就是可以对MySQL的增量数据进行实时同步，支持同步到MySQL、Elasticsearch、HBase等数据存储中去。</p>
+<h3 id="canal工作原理"><a href="#canal工作原理" class="headerlink" title="canal工作原理"></a>canal工作原理</h3><p>canal会模拟MySQL主库和从库的交互协议，从而伪装成MySQL的从库，然后向MySQL主库发送dump协议，MySQL主库收到dump请求会向canal推送binlog，canal通过解析binlog将数据同步到其他存储中去。</p>
+<p><strong><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000038264508">地址</a></strong></p>
+<h3 id="canal的使用"><a href="#canal的使用" class="headerlink" title="canal的使用"></a>canal的使用</h3><p>首先我们需要<a target="_blank" rel="noopener" href="https://github.com/alibaba/canal/releases">下载canal</a>的各个组件<code>canal-server</code>、<code>canal-adapter</code>、<code>canal-admin</code></p>
+<ol>
+<li>calnal-server(canal-deploy) : 可以直接监听MySQL的binlog，把自己伪装成MySQL的从库，只负责接收数据，并不做处理；</li>
+<li>canal-adapter：相当于canal的客户端，会从canal-server中获取数据，然后对数据进行同步，可以同步到MySQL、Elasticsearch和HBase等存储中去；</li>
+<li>canal-admin：为canal提供整体配置管理、节点运维等面向运维的功能，提供相对友好的WebUI操作界面，方便更多用户快速和安全的操作。</li>
+</ol>
+<p><strong>注：</strong>不同版本的MySQL、Elasticsearch 和 canal 会有兼容性问题，要注意版本。</p>
 
     </div>
 
@@ -294,7 +310,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://www.1226.site/2020/11/29/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" title="多线程">http://www.1226.site/2020/11/29/多线程/</a>
+    <a href="http://www.1226.site/2021/02/02/MySQL%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%88%B0ES7/" title="MySQL数据同步到ES7">http://www.1226.site/2021/02/02/MySQL数据同步到ES7/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -304,11 +320,6 @@
 
 
       <footer class="post-footer">
-          
-          <div class="post-tags">
-              <a href="/tags/%E7%BA%BF%E7%A8%8B/" rel="tag"><i class="fa fa-tag"></i> 线程</a>
-              <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag"><i class="fa fa-tag"></i> 多线程</a>
-          </div>
 
         
 
@@ -316,13 +327,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/11/28/Spring-Boot%E9%9B%86%E6%88%90Elasticsearch%EF%BC%887-x-%E7%89%88%E6%9C%AC%EF%BC%89/" rel="prev" title="Spring Boot集成Elasticsearch（7.x 版本）实现各种搜索（后续可以再补充）">
-      <i class="fa fa-chevron-left"></i> Spring Boot集成Elasticsearch（7.x 版本）实现各种搜索（后续可以再补充）
+    <a href="/2021/01/28/CentOS%E5%AE%89%E8%A3%85Kafka/" rel="prev" title="CentOS安装Kafka">
+      <i class="fa fa-chevron-left"></i> CentOS安装Kafka
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/01/07/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E8%90%BD%E5%9C%B0%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF/" rel="next" title="单点登录落地实现技术">
-      单点登录落地实现技术 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -381,6 +389,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8go-mysql-elasticsearch%E5%BC%80%E6%BA%90%E5%90%8C%E6%AD%A5%E5%B7%A5%E5%85%B7"><span class="nav-number">1.</span> <span class="nav-text">使用go-mysql-elasticsearch开源同步工具</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.2.</span> <span class="nav-text">使用事项</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A9%E7%94%A8Binlog%E5%92%8CKafka%E5%AE%9E%E6%97%B6%E5%90%8C%E6%AD%A5mysql%E6%95%B0%E6%8D%AE%E5%88%B0Elasticsearch"><span class="nav-number">2.</span> <span class="nav-text">利用Binlog和Kafka实时同步mysql数据到Elasticsearch</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90"><span class="nav-number">2.1.</span> <span class="nav-text">分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Canal%E5%B0%86MySQL%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%88%B0Elasticsearch"><span class="nav-number">3.</span> <span class="nav-text">使用Canal将MySQL数据同步到Elasticsearch</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#canal%E7%AE%80%E4%BB%8B"><span class="nav-number">3.1.</span> <span class="nav-text">canal简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#canal%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">3.2.</span> <span class="nav-text">canal工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#canal%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">3.3.</span> <span class="nav-text">canal的使用</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

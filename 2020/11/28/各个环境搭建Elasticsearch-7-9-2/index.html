@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.1226.site","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
+  </script>
+
+  <meta name="description" content="Elasticsearch 是一个分布式、RESTful 风格的搜索和数据分析引擎，能够解决不断涌现出的各种用例。 作为 Elastic Stack 的核心，它集中存储您的数据，帮助您发现意料之中以及意料之外的情况，elasticsearch官方文档。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="各个环境搭建Elasticsearch-7.9.2多节点配置">
+<meta property="og:url" content="http://www.1226.site/2020/11/28/%E5%90%84%E4%B8%AA%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAElasticsearch-7-9-2/index.html">
+<meta property="og:site_name" content="小沃的博客">
+<meta property="og:description" content="Elasticsearch 是一个分布式、RESTful 风格的搜索和数据分析引擎，能够解决不断涌现出的各种用例。 作为 Elastic Stack 的核心，它集中存储您的数据，帮助您发现意料之中以及意料之外的情况，elasticsearch官方文档。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://res.cloudinary.com/hanwen/image/upload/v1606530334/blog_use/Elasticsearch/1X704_LCG_AI_8EF7_9715_f0m1nl.png">
+<meta property="og:image" content="https://res.cloudinary.com/hanwen/image/upload/v1606533826/blog_use/Elasticsearch/ElasticSearch_Head_npklv4.png">
+<meta property="article:published_time" content="2020-11-28T01:56:40.000Z">
+<meta property="article:modified_time" content="2024-03-27T09:36:40.281Z">
+<meta property="article:author" content="Liuhw">
+<meta property="article:tag" content="Elasticsearch">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://res.cloudinary.com/hanwen/image/upload/v1606530334/blog_use/Elasticsearch/1X704_LCG_AI_8EF7_9715_f0m1nl.png">
+
+<link rel="canonical" href="http://www.1226.site/2020/11/28/%E5%90%84%E4%B8%AA%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAElasticsearch-7-9-2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>各个环境搭建Elasticsearch-7.9.2多节点配置 | 小沃的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">小沃的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">我是小白，不喜，勿喷，人生苦短莫学JAVA</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">10</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">7</span></a>
+
+  </li>
+        <li class="menu-item menu-item-favorite">
+
+    <a href="/favorite/" rel="section"><i class="fa fa-heart fa-fw"></i>收藏夹</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/xiaowoonly" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.1226.site/2020/11/28/%E5%90%84%E4%B8%AA%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAElasticsearch-7-9-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liuhw">
+      <meta itemprop="description" content="我是小白，不喜，勿喷">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小沃的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          各个环境搭建Elasticsearch-7.9.2多节点配置
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-28 09:56:40" itemprop="dateCreated datePublished" datetime="2020-11-28T09:56:40+08:00">2020-11-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-03-27 17:36:40" itemprop="dateModified" datetime="2024-03-27T17:36:40+08:00">2024-03-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Elasticsearch/" itemprop="url" rel="index"><span itemprop="name">Elasticsearch</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Elasticsearch 是一个分布式、RESTful 风格的搜索和数据分析引擎，能够解决不断涌现出的各种用例。 作为 Elastic Stack 的核心，它集中存储您的数据，帮助您发现意料之中以及意料之外的情况，<a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/7.x/index.html">elasticsearch官方文档</a>。</p>
+<span id="more"></span>
+
+<h2 id="Elasticsearch核心概念"><a href="#Elasticsearch核心概念" class="headerlink" title="Elasticsearch核心概念"></a>Elasticsearch核心概念</h2><ol>
+<li><p>接近实时（NRT）</p>
+<p>Elasticsearch是一个接近实时的搜索平台。这意味着，从索引一个文档直到这个文档能够被搜索到有一个轻微的延迟（通常是1秒）。</p>
+</li>
+<li><p>集群（cluster）</p>
+<p>一个集群就是由一个或多个节点组织在一起，它们共同持有你整个的数据，并一起提供索引和搜索功能。一个集群由一个唯一的名字标识，这个名字默认就是“elasticsearch”。这个名字是重要的，因为一个节点只能通过指定某个集群的名字，来加入这个集群。在产品环境中显式地设定这个名字是一个好习惯，但是使用默认值来进行测试&#x2F;开发也是不错的。</p>
+</li>
+<li><p>节点（node）</p>
+<p>一个节点是你集群中的一个服务器，作为集群的一部分，它存储你的数据，参与集群的索引和搜索功能。和集群类似，一个节点也是由一个名字来标识的，默认情况下，这个名字是一个随机的漫威漫画角色的名字，这个名字会在启动的时候赋予节点。这个名字对于管理工作来说挺重要的，因为在这个管理过程中，你会去确定网络中的哪些服务器对应于Elasticsearch集群中的哪些节点。</p>
+<p>一个节点可以通过配置集群名称的方式来加入一个指定的集群。默认情况下，每个节点都会被安排加入到一个叫做“elasticsearch”的集群中，这意味着，如果你在你的网络中启动了若干个节点，并假定它们能够相互发现彼此，它们将会自动地形成并加入到一个叫做“elasticsearch”的集群中。</p>
+<p>在一个集群里，只要你想，可以拥有任意多个节点。而且，如果当前你的网络中没有运行任何Elasticsearch节点，这时启动一个节点，会默认创建并加入一个叫做“elasticsearch”的集群。</p>
+</li>
+<li><p>ElaticSearch 和 DB 的关系</p>
+<p>在 Elasticsearch 中，文档归属于一种类型 type，而这些类型存在于索引 index 中，我们可以列一些简单的不同点，来类比传统关系型数据库：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Relational DB -&gt; Databases -&gt; Tables -&gt; Rows -&gt; Columns</span><br><span class="line">Elasticsearch -&gt; Indices -&gt; Types -&gt; Documents -&gt; Fields</span><br></pre></td></tr></table></figure>
+
+<p>Elasticsearch 集群可以包含多个索引 indices，每一个索引可以包含多个类型 types，每一个类型包含多个文档 documents，然后每个文档包含多个字段 Fields。而在 DB 中可以有多个数据库 Databases，每个库中可以有多张表 Tables，没个表中又包含多行Rows，每行包含多列Columns。</p>
+</li>
+<li><p>索引（index）</p>
+<p>一个索引就是一个拥有几分相似特征的文档的集合。比如说，你可以有一个客户数据的索引，另一个产品目录的索引，还有一个订单数据的索引。一个索引由一个名字来标识（必须全部是小写字母的），并且当我们要对对应于这个索引中的文档进行索引、搜索、更新和删除的时候，都要使用到这个名字。索引类似于关系型数据库中Database的概念。在一个集群中，如果你想，可以定义任意多的索引。索引是含义相同属性的文档集合，是 ElasticSearch 的一个逻辑存储，可以理解为关系型数据库中的数据库，ElasticSearch 可以把索引数据存放到一台服务器上，也可以 sharding 后存到多台服务器上，每个索引有一个或多个分片，每个分片可以有多个副本。</p>
+</li>
+<li><p>类型（type） </p>
+<p><strong>需要注意的是，7.x后，已废除单个索引下多 Type 的支持，es删除了type，只允许存在一种type，不需要指定type的值，默认是_doc</strong>；</p>
+<p>在一个索引中，你可以定义一种或多种类型。一个类型是你的索引的一个逻辑上的分类&#x2F;分区，其语义完全由你来定。通常，会为具有一组共同字段的文档定义一个类型。比如说，我们假设你运营一个博客平台并且将你所有的数据存储到一个索引中。在这个索引中，你可以为用户数据定义一个类型，为博客数据定义另一个类型，当然，也可以为评论数据定义另一个类型。类型类似于关系型数据库中Table的概念。</p>
+</li>
+<li><p>文档（document）</p>
+<p>一个文档是一个可被索引的基础信息单元。比如，你可以拥有某一个客户的文档，某一个产品的一个文档，当然，也可以拥有某个订单的一个文档。文档以JSON（Javascript Object Notation）格式来表示，而JSON是一个到处存在的互联网数据交互格式。<br>在一个index&#x2F;type里面，只要你想，你可以存储任意多的文档。注意，尽管一个文档，物理上存在于一个索引之中，文档必须被索引&#x2F;赋予一个索引的type。文档类似于关系型数据库中Record的概念。实际上一个文档除了用户定义的数据外，还包括<code>_index</code>、<code>_type</code>和<code>_id</code>字段。</p>
+</li>
+<li><p>映射（mapping）</p>
+<p>ElasticSearch 的 Mapping 非常类似于静态语言中的数据类型：声明一个变量为 int 类型的变量，以后这个变量都只能存储 int 类型的数据。同样的，一个 number 类型的 mapping 字段只能存储 number 类型的数据。同语言的数据类型相比，Mapping 还有一些其他的含义，Mapping 不仅告诉 ElasticSearch 一个 Field 中是什么类型的值， 它还告诉 ElasticSearch 如何索引数据以及数据是否能被搜索到。ElaticSearch 默认是动态创建索引和索引类型的 Mapping 的。这就相当于无需定义 Solr 中的 Schema，无需指定各个字段的索引规则就可以索引文件，很方便。但有时方便就代表着不灵活。比如，ElasticSearch 默认一个字段是要做分词的，但我们有时要搜索匹配整个字段却不行。如有统计工作要记录每个城市出现的次数。对于 name 字段，若记录 new york 文本，ElasticSearch 可能会把它拆分成 new 和 york 这两个词，分别计算这个两个单词的次数，而不是我们期望的 new york。</p>
+</li>
+<li><p>分片和复制（shards &amp; replicas）</p>
+<p>一个索引可以存储超出单个结点硬件限制的大量数据。比如，一个具有10亿文档的索引占据1TB的磁盘空间，而任一节点都没有这样大的磁盘空间；或者单个节点处理搜索请求，响应太慢。Elasticsearch提供了将索引划分成多份的能力，这些份就叫做分片。当你创建一个索引的时候，你可以指定你想要的分片的数量。每个分片本身也是一个功能完善并且独立的“索引”，这个“索引”可以被放置到集群中的任何节点上。</p>
+</li>
+</ol>
+<h2 id="Elasticsearch7-X重大改进"><a href="#Elasticsearch7-X重大改进" class="headerlink" title="Elasticsearch7.X重大改进"></a>Elasticsearch7.X重大改进</h2><ol>
+<li><p>彻底废弃多type支持，包括api层面，之前版本可在一个索引库下创建多个type。</p>
+</li>
+<li><p>彻底废弃_all字段支持，为提升性能默认不再支持全文检索，即7.0之后版本进行该项配置会报错。</p>
+</li>
+<li><p>新增应用程序主动监测功能，搭配对应的kibana版本，用户可监测应用服务的健康状态，并在出现问题后及时发出通知。</p>
+</li>
+<li><p>取消query结果中hits count的支持（聚合查询除外），使得查询性能大幅提升（3x-7x faster）。这意味着，每次查询后将不能得到精确的结果集数量。</p>
+</li>
+<li><p>新增intervals query ,用户可设置多字符串在文档中出现的先后顺序进行检索。</p>
+</li>
+<li><p>新增script_core ，通过此操作用户可以精确控制返回结果的score分值。</p>
+</li>
+<li><p>优化集群协调子系统，缩减配置项提升稳定性。</p>
+</li>
+<li><p>新增 alias、date_nanos、features、vector等数据类型。</p>
+</li>
+<li><p>7.0自带java环境，所以我们在安装es时不再需要单独下载和配置java_home。</p>
+</li>
+<li><p>7.0将不会再有OOM的情况，JVM引入了新的circuit breaker（熔断）机制，当查询或聚合的数据量超出单机处理的最大内存限制时会被截断，并抛出异常（有点类似clickhouse）。</p>
+</li>
+<li><p>丰富多彩的kibana功能。</p>
+</li>
+</ol>
+<h2 id="Windows安装Elasticsearch"><a href="#Windows安装Elasticsearch" class="headerlink" title="Windows安装Elasticsearch"></a>Windows安装Elasticsearch</h2><ol>
+<li><p>windows下载ElasticSearch</p>
+<p><a target="_blank" rel="noopener" href="https://www.elastic.co/cn/downloads/elasticsearch">官网下载地址</a>，目前最新版本为7.10.0</p>
+<p><img src="https://res.cloudinary.com/hanwen/image/upload/v1606530334/blog_use/Elasticsearch/1X704_LCG_AI_8EF7_9715_f0m1nl.png"></p>
+</li>
+<li><p>安装，目录结构</p>
+<p>bin ：脚本文件，包括 ES 启动 &amp; 安装插件等等；</p>
+<p>config ： elasticsearch.yml（ES 配置文件）、jvm.options（JVM 配置文件）、日志配置文件等等；</p>
+<p>JDK ： 内置的 JDK，JAVA_VERSION&#x3D;”12.0.1”；</p>
+<p>lib ： 类库；</p>
+<p>logs ： 日志文件；</p>
+<p>modules ： ES 所有模块，包括 X-pack 等；</p>
+<p>plugins ： ES 已经安装的插件。默认没有插件；</p>
+<p>data ： ES 启动的时候，会有该目录，用来存储文档数据。该目录可以设置</p>
+<p>ES 默认安装后设置的堆内存是 1 GB，推荐：如果足够的内存，也尽量不要 超过 32 GB。即每个节点内存分配不超过 32 GB。 因为它浪费了内存，降低了 CPU 的性能，还要让 GC 应对大内存。如果你想保证其安全可靠，设置堆内存为 31 GB 是一个安全的选择。</p>
+<p>配置说明：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">cluster.name</span>    <span class="string">集群名称，相同名称为一个集群</span></span><br><span class="line"><span class="string">node.name</span>   <span class="string">节点名称，集群模式下每个节点名称唯一</span></span><br><span class="line"><span class="string">node.master</span>     <span class="string">当前节点是否可以被选举为master节点，是：true、否：false</span></span><br><span class="line"><span class="string">node.data</span>   <span class="string">当前节点是否用于存储数据，是：true、否：false</span></span><br><span class="line"><span class="string">path.data</span>   <span class="string">索引数据存放的位置</span></span><br><span class="line"><span class="string">path.logs</span>   <span class="string">日志文件存放的位置</span></span><br><span class="line"><span class="string">bootstrap.memory_lock</span>   <span class="string">需求锁住物理内存，是：true、否：false</span></span><br><span class="line"><span class="string">bootstrap.system_call_filter</span>    <span class="string">SecComp检测，是：true、否：false</span></span><br><span class="line"><span class="string">network.host</span>    <span class="string">监听地址，用于访问该es</span></span><br><span class="line"><span class="string">network.publish_host</span>    <span class="string">可设置成内网ip，用于集群内各机器间通信</span></span><br><span class="line"><span class="string">http.port</span>   <span class="string">es对外提供的http端口，默认</span> <span class="number">9200</span></span><br><span class="line"><span class="string">discovery.seed_hosts</span>    <span class="string">es7.x</span> <span class="string">之后新增的配置，写入候选主节点的设备地址，在开启服务后可以被选为主节点</span></span><br><span class="line"><span class="string">cluster.initial_master_nodes</span>    <span class="string">es7.x</span> <span class="string">之后新增的配置，初始化一个新的集群时需要此配置来选举master</span></span><br><span class="line"><span class="string">http.cors.enabled</span>   <span class="string">是否支持跨域，是：true，在使用head插件时需要此配置</span></span><br><span class="line"><span class="string">http.cors.allow-origin</span>  <span class="string">&quot;*&quot;</span> <span class="string">表示支持所有域名</span></span><br><span class="line"></span><br><span class="line"><span class="string">我们要只需要在之前的基础上，打开配置文件elasticsearch.yml，添加如下三个配置：</span></span><br><span class="line"><span class="attr">cluster.name:</span> <span class="string">my-es</span>   <span class="comment">#集群名称</span></span><br><span class="line"><span class="attr">node.name:</span> <span class="string">node-master</span> <span class="comment">#主节点名称</span></span><br><span class="line"><span class="attr">node.master:</span> <span class="literal">true</span> <span class="comment">#当前节点是否可以被选举为master节点，是：true、否：false</span></span><br><span class="line"><span class="attr">discovery.seed_hosts:</span> [<span class="string">&quot;192.168.43.96&quot;</span>, <span class="string">&quot;192.168.43.96&quot;</span>, <span class="string">&quot;192.168.43.96&quot;</span>]<span class="comment">#写入候选主节点的设备地址，在开启服务后可以被选为主节点</span></span><br><span class="line"><span class="attr">cluster.initial_master_nodes:</span> [<span class="string">&quot;node-1&quot;</span>] <span class="comment">#初始化一个新的集群时需要此配置来选举master</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>安装之后，启动bin目录下的<code>elasticsearch.bat</code>，浏览器输入<code>http://localhost:9200/</code>可以看到</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;DESKTOP-OTFETG1&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;cluster_name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;my-application&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;cluster_uuid&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Spia1nK7RLuV9UsecsZ29w&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;number&quot;</span><span class="punctuation">:</span> <span class="string">&quot;7.9.2&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;build_flavor&quot;</span><span class="punctuation">:</span> <span class="string">&quot;default&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;build_type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;zip&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;build_hash&quot;</span><span class="punctuation">:</span> <span class="string">&quot;d34da0ea4a966c4e49417f2da2f244e3e97b4e6e&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;build_date&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2020-09-23T00:45:33.626720Z&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;build_snapshot&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;lucene_version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;8.6.2&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;minimum_wire_compatibility_version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;6.8.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;minimum_index_compatibility_version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;6.0.0-beta1&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;tagline&quot;</span><span class="punctuation">:</span> <span class="string">&quot;You Know, for Search&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>其中：</p>
+<ul>
+<li>name ： 默认启动的时候指定了 ES 实例名称，name 为 BYSocketdeMacBook-Pro-2.local</li>
+<li>cluster_name ： 默认名为 elasticsearch</li>
+<li>version ：版本信息</li>
+</ul>
+<p>也可以通过 <code>http://localhost:9200/_cat/nodes?v</code> 地址，可以看到当前节点信息：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ip        heap.percent ram.percent cpu load_1m load_5m load_15m node.role master name</span><br><span class="line"><span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>           <span class="number">57</span>          <span class="number">59</span>  <span class="number">12</span>                          dilmrt    *      DESKTOP-OTFETG1</span><br></pre></td></tr></table></figure>
+
+<p>如果是多节点，其中节点一配置为：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 设置集群名称，集群内所有节点的名称必须一致。</span></span><br><span class="line"><span class="attr">cluster.name:</span> <span class="string">my-application</span></span><br><span class="line"><span class="comment"># 设置节点名称，集群内节点名称必须唯一。</span></span><br><span class="line"><span class="attr">node.name:</span> <span class="string">node-1</span></span><br><span class="line"><span class="comment"># 表示该节点会不会作为主节点，true表示会；false表示不会</span></span><br><span class="line"><span class="attr">node.master:</span> <span class="literal">true</span></span><br><span class="line"><span class="comment"># 当前节点是否用于存储数据，是：true、否：false</span></span><br><span class="line"><span class="comment"># node.data: true</span></span><br><span class="line"><span class="comment"># 索引数据存放的位置</span></span><br><span class="line"><span class="comment">#path.data: /opt/elasticsearch/data</span></span><br><span class="line"><span class="comment"># 日志文件存放的位置</span></span><br><span class="line"><span class="comment">#path.logs: /opt/elasticsearch/logs</span></span><br><span class="line"><span class="comment"># 需求锁住物理内存，是：true、否：false</span></span><br><span class="line"><span class="comment">#bootstrap.memory_lock: true</span></span><br><span class="line"><span class="comment"># 监听地址，用于访问该es</span></span><br><span class="line"><span class="comment"># network.host: 127.0.0.1</span></span><br><span class="line"><span class="comment"># es对外提供的http端口，默认 9200</span></span><br><span class="line"><span class="attr">http.port:</span> <span class="number">9200</span></span><br><span class="line"><span class="comment"># TCP的默认监听端口，默认 9300</span></span><br><span class="line"><span class="comment"># transport.tcp.port: 9300</span></span><br><span class="line"><span class="comment"># 设置这个参数来保证集群中的节点可以知道其它N个有master资格的节点。默认为1，对于大的集群来说，可以设置大一点的值（2-4）</span></span><br><span class="line"><span class="comment"># discovery.zen.minimum_master_nodes: 2</span></span><br><span class="line"><span class="comment"># es7.x 之后新增的配置，写入候选主节点的设备地址，在开启服务后可以被选为主节点</span></span><br><span class="line"><span class="attr">discovery.seed_hosts:</span> [<span class="string">&quot;127.0.0.1:9300&quot;</span>, <span class="string">&quot;127.0.0.1:9301&quot;</span>] </span><br><span class="line"><span class="comment"># discovery.zen.fd.ping_timeout: 1m</span></span><br><span class="line"><span class="comment"># discovery.zen.fd.ping_retries: 5</span></span><br><span class="line"><span class="comment"># es7.x 之后新增的配置，初始化一个新的集群时需要此配置来选举master</span></span><br><span class="line"><span class="attr">cluster.initial_master_nodes:</span> [<span class="string">&quot;node-1&quot;</span>, <span class="string">&quot;node-2&quot;</span>]</span><br><span class="line"><span class="comment"># 是否支持跨域，是：true，在使用head插件时需要此配置</span></span><br><span class="line"><span class="attr">http.cors.enabled:</span> <span class="literal">true</span></span><br><span class="line"><span class="comment"># “*” 表示支持所有域名</span></span><br><span class="line"><span class="attr">http.cors.allow-origin:</span> <span class="string">&quot;*&quot;</span></span><br><span class="line"><span class="comment"># action.destructive_requires_name: true</span></span><br><span class="line"><span class="comment"># action.auto_create_index: .security,.monitoring*,.watches,.triggered_watches,.watcher-history*</span></span><br><span class="line"><span class="comment"># xpack.security.enabled: false</span></span><br><span class="line"><span class="comment"># xpack.monitoring.enabled: true</span></span><br><span class="line"><span class="comment"># xpack.graph.enabled: false</span></span><br><span class="line"><span class="comment"># xpack.watcher.enabled: false</span></span><br><span class="line"><span class="comment"># xpack.ml.enabled: false</span></span><br></pre></td></tr></table></figure>
+
+<p>节点二配置：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 设置集群名称，集群内所有节点的名称必须一致。</span></span><br><span class="line"><span class="attr">cluster.name:</span> <span class="string">my-application</span></span><br><span class="line"><span class="comment"># 设置节点名称，集群内节点名称必须唯一。</span></span><br><span class="line"><span class="attr">node.name:</span> <span class="string">node-2</span></span><br><span class="line"><span class="comment"># 表示该节点会不会作为主节点，true表示会；false表示不会</span></span><br><span class="line"><span class="attr">node.master:</span> <span class="literal">true</span></span><br><span class="line"><span class="comment"># 当前节点是否用于存储数据，是：true、否：false</span></span><br><span class="line"><span class="comment"># node.data: true</span></span><br><span class="line"><span class="comment"># 索引数据存放的位置</span></span><br><span class="line"><span class="comment">#path.data: /opt/elasticsearch/data</span></span><br><span class="line"><span class="comment"># 日志文件存放的位置</span></span><br><span class="line"><span class="comment">#path.logs: /opt/elasticsearch/logs</span></span><br><span class="line"><span class="comment"># 需求锁住物理内存，是：true、否：false</span></span><br><span class="line"><span class="comment">#bootstrap.memory_lock: true</span></span><br><span class="line"><span class="comment"># 监听地址，用于访问该es</span></span><br><span class="line"><span class="comment"># network.host: 127.0.0.1</span></span><br><span class="line"><span class="comment"># es对外提供的http端口，默认 9200</span></span><br><span class="line"><span class="attr">http.port:</span> <span class="number">9201</span></span><br><span class="line"><span class="comment"># TCP的默认监听端口，默认 9300</span></span><br><span class="line"><span class="comment"># transport.tcp.port: 9301</span></span><br><span class="line"><span class="comment"># 设置这个参数来保证集群中的节点可以知道其它N个有master资格的节点。默认为1，对于大的集群来说，可以设置大一点的值（2-4）</span></span><br><span class="line"><span class="comment"># discovery.zen.minimum_master_nodes: 2</span></span><br><span class="line"><span class="comment"># es7.x 之后新增的配置，写入候选主节点的设备地址，在开启服务后可以被选为主节点</span></span><br><span class="line"><span class="comment"># discovery.seed_hosts: [&quot;127.0.0.1:9300&quot;, &quot;127.0.0.1:9301&quot;] </span></span><br><span class="line"><span class="comment"># discovery.zen.fd.ping_timeout: 1m</span></span><br><span class="line"><span class="comment"># discovery.zen.fd.ping_retries: 5</span></span><br><span class="line"><span class="comment"># es7.x 之后新增的配置，初始化一个新的集群时需要此配置来选举master</span></span><br><span class="line"><span class="attr">cluster.initial_master_nodes:</span> [<span class="string">&quot;node-1&quot;</span>, <span class="string">&quot;node-2&quot;</span>]</span><br><span class="line"><span class="comment"># 是否支持跨域，是：true，在使用head插件时需要此配置</span></span><br><span class="line"><span class="attr">http.cors.enabled:</span> <span class="literal">true</span></span><br><span class="line"><span class="comment"># “*” 表示支持所有域名</span></span><br><span class="line"><span class="attr">http.cors.allow-origin:</span> <span class="string">&quot;*&quot;</span></span><br><span class="line"><span class="comment"># action.destructive_requires_name: true</span></span><br><span class="line"><span class="comment"># action.auto_create_index: .security,.monitoring*,.watches,.triggered_watches,.watcher-history*</span></span><br><span class="line"><span class="comment"># xpack.security.enabled: false</span></span><br><span class="line"><span class="comment"># xpack.monitoring.enabled: true</span></span><br><span class="line"><span class="comment"># xpack.graph.enabled: false</span></span><br><span class="line"><span class="comment"># xpack.watcher.enabled: false</span></span><br><span class="line"><span class="comment"># xpack.ml.enabled: false</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="CentOS安装Elasticsearch"><a href="#CentOS安装Elasticsearch" class="headerlink" title="CentOS安装Elasticsearch"></a>CentOS安装Elasticsearch</h2><h3 id="yum源方式"><a href="#yum源方式" class="headerlink" title="yum源方式"></a>yum源方式</h3><ol>
+<li><p>创建文件夹</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> /opt/elasticsearch</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在&#x2F;opt&#x2F;elasticsearch下载</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://mirrors.tuna.tsinghua.edu.cn/elasticstack/7.x/yum/7.9.2/elasticsearch-7.9.2-x86_64.rpm</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装elasticsearch</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh elasticsearch-7.9.2-x86_64.rpm</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="安装包方式"><a href="#安装包方式" class="headerlink" title="安装包方式"></a>安装包方式</h3><ol>
+<li><p>同windows，下载LINUX X86_64版本</p>
+</li>
+<li><p>下载之后，解压</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf elasticsearch-7.9.2-linux-x86_64.tar.gz</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置elasticsearch</p>
+<ul>
+<li><p>编辑elasticsearch.yml</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /opt/elasticsearch/config</span><br><span class="line">vim elasticsearch.yml</span><br></pre></td></tr></table></figure>
+
+<p>配置文件如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ======================== Elasticsearch Configuration =========================</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># <span class="doctag">NOTE:</span> Elasticsearch comes with reasonable defaults for most settings.</span></span><br><span class="line"><span class="comment">#       Before you set out to tweak and tune the configuration, make sure you</span></span><br><span class="line"><span class="comment">#       understand what are you trying to accomplish and the consequences.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># The primary way of configuring a node is via this file. This template lists</span></span><br><span class="line"><span class="comment"># the most important settings you may want to configure for a production cluster.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Please consult the documentation for further information on configuration options:</span></span><br><span class="line"><span class="comment"># https://www.elastic.co/guide/en/elasticsearch/reference/index.html</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># ---------------------------------- Cluster -----------------------------------</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Use a descriptive name for your cluster:</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="attr">cluster.name:</span> <span class="string">my-application</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># ------------------------------------ Node ------------------------------------</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Use a descriptive name for the node:</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="attr">node.name:</span> <span class="string">node-1</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Add custom attributes to the node:</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#node.attr.rack: r1</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># ----------------------------------- Paths ------------------------------------</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Path to directory where to store the data (separate multiple locations by comma):</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="attr">path.data:</span> <span class="string">/opt/elasticsearch/elasticsearch-7.9.2/data</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Path to log files:</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="attr">path.logs:</span> <span class="string">/opt/elasticsearch/elasticsearch-7.9.2/logs</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># ----------------------------------- Memory -----------------------------------</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Lock the memory on startup:</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#bootstrap.memory_lock: true</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Make sure that the heap size is set to about half the memory available</span></span><br><span class="line"><span class="comment"># on the system and that the owner of the process is allowed to use this</span></span><br><span class="line"><span class="comment"># limit.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Elasticsearch performs poorly when the system is swapping the memory.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># ---------------------------------- Network -----------------------------------</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Set the bind address to a specific IP (IPv4 or IPv6):</span></span><br><span class="line"><span class="comment"># 可以直接填ip</span></span><br><span class="line"><span class="attr">network.host:</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Set a custom port for HTTP:</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="attr">http.port:</span> <span class="number">9200</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># For more information, consult the network module documentation.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># --------------------------------- Discovery ----------------------------------</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Pass an initial list of hosts to perform discovery when this node is started:</span></span><br><span class="line"><span class="comment"># The default list of hosts is [&quot;127.0.0.1&quot;, &quot;[::1]&quot;]</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="attr">discovery.seed_hosts:</span> [<span class="string">&quot;xxx.xxx.xxx.xxx:9300&quot;</span><span class="string">，&quot;xxx.xxx.xxx.xxx:9301&quot;</span>,<span class="string">&quot;xxx.xxx.xxx.xxx:9302&quot;</span>]</span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Bootstrap the cluster using an initial set of master-eligible nodes:</span></span><br><span class="line"><span class="comment"># 写一个即可，作为master</span></span><br><span class="line"><span class="attr">cluster.initial_master_nodes:</span> [<span class="string">&quot;node-1&quot;</span>,<span class="string">&quot;node-2&quot;</span>,<span class="string">&quot;node-3&quot;</span>]</span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># For more information, consult the discovery and cluster formation module documentation.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># ---------------------------------- Gateway -----------------------------------</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Block initial recovery after a full cluster restart until N nodes are started:</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#gateway.recover_after_nodes: 3</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># For more information, consult the gateway module documentation.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># ---------------------------------- Various -----------------------------------</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Require explicit names when deleting indices:</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#action.destructive_requires_name: true</span></span><br><span class="line"><span class="attr">http.cors.enabled:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">http.cors.allow-origin:</span> <span class="string">&quot;*&quot;</span></span><br><span class="line"><span class="attr">bootstrap.memory_lock:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">bootstrap.system_call_filter:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>报错原因分析：</p>
+<ol>
+<li><p>Caused by: java.lang.RuntimeException: can not run elasticsearch as root</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">adduser es</span><br><span class="line">passwd es</span><br><span class="line"><span class="built_in">chown</span> -R es:es elasticsearch-7.9.2/</span><br><span class="line"><span class="built_in">chmod</span> 770 elasticsearch-7.9.2/</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>max file descriptors [4096] for elasticsearch process is too low, increase to at least [65535]</p>
+<p>每个进程最大同时打开文件数太小，可通过下面2个命令查看当前数量</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ulimit</span> -Hn</span><br><span class="line"><span class="built_in">ulimit</span> -Sn</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/security/limits.conf</span><br><span class="line">末尾追加</span><br><span class="line">* soft nofile 65536</span><br><span class="line">* hard nofile 65536</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>max number of threads [3818] for user [es] is too low, increase to at least [4096]</p>
+<p>最大线程个数太低。可通过下面2个命令查看当前数量</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ulimit</span> -Hu</span><br><span class="line"><span class="built_in">ulimit</span> -Su</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/security/limits.conf</span><br><span class="line">末尾追加</span><br><span class="line">* soft <span class="built_in">nproc</span> 4096</span><br><span class="line">* hard <span class="built_in">nproc</span> 4096</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/sysctl.conf</span><br><span class="line">增加 vm.max_map_count=262144</span><br><span class="line"><span class="comment">#执行命令生效</span></span><br><span class="line">sysctl -p</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+<li><p>可能用到命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查找ES进程号</span></span><br><span class="line">ps -ef | grep elastic</span><br><span class="line"><span class="comment"># 杀掉ES进程</span></span><br><span class="line"><span class="built_in">kill</span> -9 3250</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ol>
+<p><strong>检查集群是否成功：<a target="_blank" rel="noopener" href="http://192.168.12.136:9200/_cat/health?v">http://192.168.12.136:9200/_cat/health?v</a></strong></p>
+<h2 id="Elasticsearch设置开机启动"><a href="#Elasticsearch设置开机启动" class="headerlink" title="Elasticsearch设置开机启动"></a>Elasticsearch设置开机启动</h2><p>查看当前的开机启动服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chkconfig --list</span><br></pre></td></tr></table></figure>
+
+<p>手动启动没有问题，且外网可以访问正常；</p>
+<p>外网若访问不了</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=9200/tcp --permanent</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<p>在&#x2F;etc&#x2F;init.d&#x2F;目录创建es文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/init.d/es</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/sh</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">chkconfig: 2345 80 90</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">description: elasticsearch</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">processname: elasticsearch-7.9.2</span></span><br><span class="line"></span><br><span class="line">ES_HOME=/opt/elasticsearch/elasticsearch-7.9.2-9200</span><br><span class="line"></span><br><span class="line">case $1 in</span><br><span class="line">  start)</span><br><span class="line">    su - es -c &quot;$ES_HOME/bin/elasticsearch -d -p pid&quot;</span><br><span class="line">    echo &quot;elasticsearch is started&quot;</span><br><span class="line">    ;;</span><br><span class="line">  stop)</span><br><span class="line">    pid=`cat $ES_HOME/pid`</span><br><span class="line">    kill -9 $pid</span><br><span class="line">    echo &quot;elasticsearch is stopped&quot;</span><br><span class="line">    ;;</span><br><span class="line">  restart)</span><br><span class="line">    pid=`cat $ES_HOME/pid`</span><br><span class="line">    kill -9 $pid</span><br><span class="line">    echo &quot;elasticsearch is stopped&quot;</span><br><span class="line">    sleep 1</span><br><span class="line">    su - es -c &quot;$ES_HOME/bin/elasticsearch -d -p pid&quot;</span><br><span class="line">    echo &quot;elasticsearch is started&quot;</span><br><span class="line">    ;;</span><br><span class="line">  *)</span><br><span class="line">    echo &quot;start|stop|restart&quot;</span><br><span class="line">    ;;</span><br><span class="line">esac</span><br><span class="line">exit 0</span><br></pre></td></tr></table></figure>
+
+<p><strong>注:</strong></p>
+<p>ES_HOME: elasticsearch所在目录</p>
+<p>su - es -c “$ES_HOME&#x2F;bin&#x2F;elasticsearch -d -p pid”  中使用自己的用户名</p>
+<p>修改上面文件的权限，执行命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">chmod</span> 777 /etc/init.d/es</span><br></pre></td></tr></table></figure>
+
+<p>添加和删除服务并设置启动方式</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">chkconfig --add es</span><br><span class="line">chkconfig --del es</span><br></pre></td></tr></table></figure>
+
+<p>启动和关闭服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">service es start // 启动服务</span><br><span class="line">service es stop // 关闭服务</span><br><span class="line">service es restart // 重启服务</span><br></pre></td></tr></table></figure>
+
+<p>设置服务的启动方式</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">chkconfig es on // 设置开机启动</span><br><span class="line">chkconfig es off // 关闭开机启动</span><br></pre></td></tr></table></figure>
+
+<h2 id="ElasticSearch-Head-使用"><a href="#ElasticSearch-Head-使用" class="headerlink" title="ElasticSearch Head 使用"></a>ElasticSearch Head 使用</h2><p>浏览器安装插件<code>ElasticSearch Head</code>即可使用</p>
+<p><img src="https://res.cloudinary.com/hanwen/image/upload/v1606533826/blog_use/Elasticsearch/ElasticSearch_Head_npklv4.png"></p>
+
+    </div>
+
+    
+    
+    
+    <!--文章结束标语-->
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">
+        ------------- 本文结束 <i class="fa fa-heart-o"></i> 感谢您的阅读-------------
+        </div>
+    
+</div>
+      
+    </div>
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Liuhw
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://www.1226.site/2020/11/28/%E5%90%84%E4%B8%AA%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAElasticsearch-7-9-2/" title="各个环境搭建Elasticsearch-7.9.2多节点配置">http://www.1226.site/2020/11/28/各个环境搭建Elasticsearch-7-9-2/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Elasticsearch/" rel="tag"><i class="fa fa-tag"></i> Elasticsearch</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/27/IntelliJ-IDEA-%E5%B8%B8%E7%94%A8%E6%8F%92%E4%BB%B6/" rel="prev" title="IntelliJ IDEA 常用插件">
+      <i class="fa fa-chevron-left"></i> IntelliJ IDEA 常用插件
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/28/Spring-Boot%E9%9B%86%E6%88%90Elasticsearch%EF%BC%887-x-%E7%89%88%E6%9C%AC%EF%BC%89/" rel="next" title="Spring Boot集成Elasticsearch（7.x 版本）实现各种搜索（后续可以再补充）">
+      Spring Boot集成Elasticsearch（7.x 版本）实现各种搜索（后续可以再补充） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Elasticsearch%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">Elasticsearch核心概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Elasticsearch7-X%E9%87%8D%E5%A4%A7%E6%94%B9%E8%BF%9B"><span class="nav-number">2.</span> <span class="nav-text">Elasticsearch7.X重大改进</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Windows%E5%AE%89%E8%A3%85Elasticsearch"><span class="nav-number">3.</span> <span class="nav-text">Windows安装Elasticsearch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CentOS%E5%AE%89%E8%A3%85Elasticsearch"><span class="nav-number">4.</span> <span class="nav-text">CentOS安装Elasticsearch</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#yum%E6%BA%90%E6%96%B9%E5%BC%8F"><span class="nav-number">4.1.</span> <span class="nav-text">yum源方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E5%8C%85%E6%96%B9%E5%BC%8F"><span class="nav-number">4.2.</span> <span class="nav-text">安装包方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Elasticsearch%E8%AE%BE%E7%BD%AE%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8"><span class="nav-number">5.</span> <span class="nav-text">Elasticsearch设置开机启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ElasticSearch-Head-%E4%BD%BF%E7%94%A8"><span class="nav-number">6.</span> <span class="nav-text">ElasticSearch Head 使用</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Liuhw"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Liuhw</p>
+  <div class="site-description" itemprop="description">我是小白，不喜，勿喷</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xiaowoonly" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xiaowoonly" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/276771864@qq.com" title="E-Mail → 276771864@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小沃博客所有，珍惜生命，爱惜身体</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  <!-- 页面点击小红心 -->
+	
+	      <script type="text/javascript" src="/js/clicklove.js"></script>
+	
+</body>
+</html>

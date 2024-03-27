@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.1226.site","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.json"};
+  </script>
+
+  <meta name="description" content="单点登录（ Single Sign-On , 简称 SSO ）是目前比较流行的服务于企业业务整合的解决方案之一， SSO 使得在多个应用系统中，用户只需要 登录一次 就可以访问所有相互信任的应用系统(一次访问，到处运行)。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="单点登录落地实现技术">
+<meta property="og:url" content="http://www.1226.site/2021/01/07/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E8%90%BD%E5%9C%B0%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF/index.html">
+<meta property="og:site_name" content="小沃的博客">
+<meta property="og:description" content="单点登录（ Single Sign-On , 简称 SSO ）是目前比较流行的服务于企业业务整合的解决方案之一， SSO 使得在多个应用系统中，用户只需要 登录一次 就可以访问所有相互信任的应用系统(一次访问，到处运行)。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-07T13:02:30.000Z">
+<meta property="article:modified_time" content="2024-03-27T09:36:40.281Z">
+<meta property="article:author" content="Liuhw">
+<meta property="article:tag" content="单点登陆">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://www.1226.site/2021/01/07/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E8%90%BD%E5%9C%B0%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>单点登录落地实现技术 | 小沃的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">小沃的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">我是小白，不喜，勿喷，人生苦短莫学JAVA</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">10</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">12</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">7</span></a>
+
+  </li>
+        <li class="menu-item menu-item-favorite">
+
+    <a href="/favorite/" rel="section"><i class="fa fa-heart fa-fw"></i>收藏夹</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/xiaowoonly" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.1226.site/2021/01/07/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E8%90%BD%E5%9C%B0%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Liuhw">
+      <meta itemprop="description" content="我是小白，不喜，勿喷">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小沃的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          单点登录落地实现技术
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-07 21:02:30" itemprop="dateCreated datePublished" datetime="2021-01-07T21:02:30+08:00">2021-01-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-03-27 17:36:40" itemprop="dateModified" datetime="2024-03-27T17:36:40+08:00">2024-03-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%8D%95%E7%82%B9%E7%99%BB%E9%99%86/" itemprop="url" rel="index"><span itemprop="name">单点登陆</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>单点登录（ Single Sign-On , 简称 SSO ）是目前比较流行的服务于企业业务整合的解决方案之一， SSO 使得在多个应用系统中，用户只需要 登录一次 就可以访问所有相互信任的应用系统(一次访问，到处运行)。</p>
+<span id="more"></span>
+
+<p>单点登陆通俗的讲就是要解决如何产生和存储那个信任，以及其他系统如何验证这个信任的有效性；</p>
+<p>单点登录的要点：1.存储信任；2.服务器生产以及验证信任；3.拿到之后服务器再次验证；</p>
+<h2 id="SSO原理"><a href="#SSO原理" class="headerlink" title="SSO原理"></a>SSO原理</h2><h3 id="SSO体系中的角色"><a href="#SSO体系中的角色" class="headerlink" title="SSO体系中的角色"></a>SSO体系中的角色</h3><ol>
+<li>User（多个）</li>
+<li>Web应用（多个）</li>
+<li>SSO认证中心（1个）</li>
+</ol>
+<h3 id="SSO实现模式的原则"><a href="#SSO实现模式的原则" class="headerlink" title="SSO实现模式的原则"></a>SSO实现模式的原则</h3><ol>
+<li>所有的认证登录都在SSO认证中心进行；</li>
+<li>SSO认证中心通过一些方法来告诉Web应用当前访问用户究竟是不是已通过认证的用户；</li>
+<li>SSO 认证中心和所有的 Web 应用建立一种信任关系，也就是说 web 应用必须信任认证中心。（单点信任）</li>
+</ol>
+<h3 id="SSO主要实现方式"><a href="#SSO主要实现方式" class="headerlink" title="SSO主要实现方式"></a>SSO主要实现方式</h3><ol>
+<li><p>共享cookies</p>
+<p>基于共享同域的cookie是Web刚开始阶段时使用的一种方式，它利用浏览同域名之间自动传递cookies机制，实现两个域名之间系统令牌 传递问题；另外，关于跨域问题，虽然 cookies本身不跨域，但可以利用它实现跨域的SSO。如：代理、暴露 SSO 令牌值等。</p>
+</li>
+<li><p>Broker-based(基于经纪人)</p>
+<p>在 这种解决方案中，有一个自动地为不同的应用程序认证用户身份的代理程序。这个代理程序需要设计有不同的功能。比如，它可以使用口令表或加密密钥来自动地将 认证的负担从用户移开。代理人被放在服务器上面，在服务器的认证系统和客户端认证方法之间充当一个 “ 翻译 “。例如 SSH 等。</p>
+</li>
+<li><p>Agent-based（基于代理人）</p>
+<p>在 这种解决方案中，有一个自动地为不同的应用程序认证用户身份的代理程序。这个代理程序需要设计有不同的功能。比如，它可以使用口令表或加密密钥来自动地将 认证的负担从用户移开。代理人被放在服务器上面，在服务器的认证系统和客户端认证方法之间充当一个 “ 翻译 “。例如 SSH 等。</p>
+</li>
+<li><p>Token-based</p>
+<p>例如 SecureID，WebID，现在被广泛使用的口令认证，比如 FTP 、邮件服务器的登录认证，这是一种简单易用的方式，实现一个口令在多种应用当中使用。</p>
+</li>
+<li><p>基于网关</p>
+</li>
+<li><p>基于 SAML</p>
+<p>SAML(Security Assertion Markup Language ，安全断言标记语言）的出现大大简化了 SSO ，并被 OASIS 批准为 SSO 的执行标准 。开源组织 OpenSAML 实现了 SAML 规范。</p>
+</li>
+</ol>
+<h2 id="主要常见技术"><a href="#主要常见技术" class="headerlink" title="主要常见技术"></a>主要常见技术</h2><ol>
+<li><p>CAS（单点登录）</p>
+</li>
+<li><p>OAuth2（第三方登录授权：QQ登录）</p>
+</li>
+<li><p>JWT（客户端token：原生）</p>
+</li>
+<li><p>安全控制框架：</p>
+<ul>
+<li>Spring-Security</li>
+<li>Shiro</li>
+</ul>
+</li>
+</ol>
+<h2 id="CAS（单点登录）"><a href="#CAS（单点登录）" class="headerlink" title="CAS（单点登录）"></a>CAS（单点登录）</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>CAS （ Central Authentication Service ） 是 Yale 大学发起的一个企业级的、开源的项目，旨在为 Web 应用系统提供一种可靠的单点登录解决方法（属于 Web SSO ）。</p>
+<h3 id="结构体系"><a href="#结构体系" class="headerlink" title="结构体系"></a>结构体系</h3><h3 id="主要特性"><a href="#主要特性" class="headerlink" title="主要特性"></a>主要特性</h3><ol>
+<li>开源、多协议的SSO解决方案；Protocols ：Custom、Protocol、CAS、OAuth、OpenID、RESTful API、SAML1.1、SAML2.0 等；</li>
+<li>支持多种认证机制：Active Directory、JAAS、JDBC、LDAP、X.509 Certificates 等；</li>
+<li>安全策略：使用票据（ Ticket ）来实现支持的认证协议；</li>
+<li>支持授权：可以决定哪些服务可以请求和验证服务票据(Service Ticket）；</li>
+<li>提 供高可用性：通过把认证过的状态数据存储在 TicketRegistry 组件中，这些组件有很多支持分布式环境的实现， 如： BerkleyDB、Default、EhcacheTicketRegistry、JDBCTicketRegistry、JBOSS TreeCache、JpaTicketRegistry、MemcacheTicketRegistry 等；</li>
+<li>支持多种客户端： Java 、 .Net 、 PHP 、 Perl 、 Apache, uPortal 等。</li>
+</ol>
+<h3 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h3><p>多个系统只需要登录一次，无需重复登录</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>授权服务器，被授权客户端CS架构</p>
+<ol>
+<li>授权服务器保存了全局的一份session，客户端（多个）格子保存自己的session；</li>
+<li>客户端登录时判断自己的session是否已登录，若未登录，则（告诉浏览器）重定向到授权服务器；（参数带上自己的地址，用于回调）</li>
+<li>授权服务器判断全局的session是否已登录，若未登录则定向到登录页面，提示用户登录，登录成功后，授权服务器重定向到客户端（参数带上ticket[一个凭证号]）；</li>
+<li>客户端收到ticket后，请求服务器获取用户信息；</li>
+<li>服务器同意客户端授权后，服务端保存用户信息至全局session，客户端将用户保存至本地session；</li>
+<li>默认不支持http请求，仅支持https，生成整数keytools；</li>
+</ol>
+<p><strong>缺点：</strong>CAS单点登录技术适用于传统应用的场景比较多，官方示例也是以JavaWeb为准，对微服务化应用，前后端分离应用，支持性较差。</p>
+<p>参考地址：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904155161559048">https://juejin.cn/post/6844904155161559048</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904038555729927">https://juejin.cn/post/6844904038555729927</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/u012702547/article/details/105699777">https://blog.csdn.net/u012702547/article/details/105699777</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.toutiao.com/i6765428664424202763/?tt_from=weixin&utm_campaign=client_share&wxshare_count=1&timestamp=1609846862&app=news_article&utm_source=weixin&utm_medium=toutiao_ios&use_new_style=1&req_id=20210105194102010130036140440A5C55&group_id=6765428664424202763">https://www.toutiao.com/i6765428664424202763/?tt_from=weixin&amp;utm_campaign=client_share&amp;wxshare_count=1&amp;timestamp=1609846862&amp;app=news_article&amp;utm_source=weixin&amp;utm_medium=toutiao_ios&amp;use_new_style=1&amp;req_id=20210105194102010130036140440A5C55&amp;group_id=6765428664424202763</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+    <!--文章结束标语-->
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">
+        ------------- 本文结束 <i class="fa fa-heart-o"></i> 感谢您的阅读-------------
+        </div>
+    
+</div>
+      
+    </div>
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Liuhw
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://www.1226.site/2021/01/07/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E8%90%BD%E5%9C%B0%E5%AE%9E%E7%8E%B0%E6%8A%80%E6%9C%AF/" title="单点登录落地实现技术">http://www.1226.site/2021/01/07/单点登录落地实现技术/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/%E5%8D%95%E7%82%B9%E7%99%BB%E9%99%86/" rel="tag"><i class="fa fa-tag"></i> 单点登陆</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/28/Spring-Boot%E9%9B%86%E6%88%90Elasticsearch%EF%BC%887-x-%E7%89%88%E6%9C%AC%EF%BC%89/" rel="prev" title="Spring Boot集成Elasticsearch（7.x 版本）实现各种搜索（后续可以再补充）">
+      <i class="fa fa-chevron-left"></i> Spring Boot集成Elasticsearch（7.x 版本）实现各种搜索（后续可以再补充）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/28/CentOS%E5%AE%89%E8%A3%85Kafka/" rel="next" title="CentOS安装Kafka">
+      CentOS安装Kafka <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SSO%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">SSO原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SSO%E4%BD%93%E7%B3%BB%E4%B8%AD%E7%9A%84%E8%A7%92%E8%89%B2"><span class="nav-number">1.1.</span> <span class="nav-text">SSO体系中的角色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SSO%E5%AE%9E%E7%8E%B0%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%8E%9F%E5%88%99"><span class="nav-number">1.2.</span> <span class="nav-text">SSO实现模式的原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SSO%E4%B8%BB%E8%A6%81%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="nav-number">1.3.</span> <span class="nav-text">SSO主要实现方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E5%B8%B8%E8%A7%81%E6%8A%80%E6%9C%AF"><span class="nav-number">2.</span> <span class="nav-text">主要常见技术</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CAS%EF%BC%88%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">CAS（单点登录）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">3.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%84%E4%BD%93%E7%B3%BB"><span class="nav-number">3.2.</span> <span class="nav-text">结构体系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E7%89%B9%E6%80%A7"><span class="nav-number">3.3.</span> <span class="nav-text">主要特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E9%97%AE%E9%A2%98"><span class="nav-number">3.4.</span> <span class="nav-text">解决问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">3.5.</span> <span class="nav-text">原理</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Liuhw"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Liuhw</p>
+  <div class="site-description" itemprop="description">我是小白，不喜，勿喷</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xiaowoonly" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xiaowoonly" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/276771864@qq.com" title="E-Mail → 276771864@qq.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小沃博客所有，珍惜生命，爱惜身体</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  <!-- 页面点击小红心 -->
+	
+	      <script type="text/javascript" src="/js/clicklove.js"></script>
+	
+</body>
+</html>
